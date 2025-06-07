@@ -21,7 +21,6 @@ public class testes_davi {
         if (email != null) driver.findElement(By.id("email")).sendKeys(email);
         if (idade != null) driver.findElement(By.id("idade")).sendKeys(idade);
         driver.findElement(By.cssSelector("button[type='submit']")).click();
-        try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
     }
 
     private String getLocalStorageFans() {
@@ -95,7 +94,4 @@ public class testes_davi {
         String fans = getLocalStorageFans();
         assertFalse(fans != null && fans.length() > 2);
     }
-
-
-
 }
