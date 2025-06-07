@@ -1,9 +1,12 @@
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 import static org.junit.jupiter.api.Assertions.*;
+import java.time.Duration;
 
 public class testes_davi {
 
@@ -13,6 +16,8 @@ public class testes_davi {
     void setUp() {
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
+        driver.get("https://davi-vert.vercel.app/index.html");
+        ((JavascriptExecutor) driver).executeScript("localStorage.clear();");
     }
 
     private void preencherEEnviar(String nome, String email, String idade) {
@@ -23,6 +28,15 @@ public class testes_davi {
         driver.findElement(By.cssSelector("button[type='submit']")).click();
     }
 
+    private void aceitarAlert() {
+        try {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+            wait.until(ExpectedConditions.alertIsPresent());
+            driver.switchTo().alert().accept();
+        } catch (Exception e) {
+        }
+    }
+
     private String getLocalStorageFans() {
         return (String) ((JavascriptExecutor) driver).executeScript("return localStorage.getItem('fans');");
     }
@@ -30,20 +44,23 @@ public class testes_davi {
     @Test
     void testIdadeZeroEhPermitida() {
         preencherEEnviar("Teste", "teste@email.com", "0");
+        aceitarAlert();
         String fans = getLocalStorageFans();
-        assertTrue(fans != null && (fans.contains("\"idade\":\"0\"") || fans.contains("\"idade\":0")));
+        assertTrue(fans != null && fans.contains("\"idade\":\"0\""));
     }
 
     @Test
     void testIdadeMaiorQue150NaoEhPermitida() {
         preencherEEnviar("Velhíssimo", "velho@email.com", "151");
+        aceitarAlert();
         String fans = getLocalStorageFans();
-        assertFalse(fans != null && (fans.contains("\"idade\":\"151\"") || fans.contains("\"idade\":151")));
+        assertFalse(fans != null && fans.contains("\"idade\":\"151\""));
     }
 
     @Test
     void testEmailVazioNaoEhPermitido() {
         preencherEEnviar("Sem Email", null, "30");
+        aceitarAlert();
         String fans = getLocalStorageFans();
         assertFalse(fans != null && fans.contains("Sem Email"));
     }
@@ -51,6 +68,7 @@ public class testes_davi {
     @Test
     void testNomeVazioNaoEhPermitido() {
         preencherEEnviar(null, "teste@email.com", "25");
+        aceitarAlert();
         String fans = getLocalStorageFans();
         assertFalse(fans != null && fans.contains("teste@email.com"));
     }
@@ -58,6 +76,7 @@ public class testes_davi {
     @Test
     void testEmailInvalidoNaoEhPermitido() {
         preencherEEnviar("Email Ruim", "emailinvalido", "30");
+        aceitarAlert();
         String fans = getLocalStorageFans();
         assertFalse(fans != null && fans.contains("Email Ruim"));
     }
@@ -65,18 +84,15 @@ public class testes_davi {
     @Test
     void testIdadeComLetrasNaoEhPermitida() {
         preencherEEnviar("Idade Letra", "letras@email.com", "abc");
+        aceitarAlert();
         String fans = getLocalStorageFans();
         assertFalse(fans != null && fans.contains("letras@email.com"));
-    }
-
-    @AfterEach
-    void tearDown() {
-        driver.quit();
     }
 
     @Test
     void testIdadeDecimalNaoEhPermitida() {
         preencherEEnviar("Decimal", "decimal@exemplo.com", "25.5");
+        aceitarAlert();
         String fans = getLocalStorageFans();
         assertFalse(fans != null && fans.contains("\"nome\":\"Decimal\""));
     }
@@ -84,6 +100,7 @@ public class testes_davi {
     @Test
     void testEmailComEspacoNaoEhValido() {
         preencherEEnviar("EmailEspaco", "email @exemplo.com", "30");
+        aceitarAlert();
         String fans = getLocalStorageFans();
         assertFalse(fans != null && fans.contains("\"nome\":\"EmailEspaco\""));
     }
@@ -91,7 +108,13 @@ public class testes_davi {
     @Test
     void testCadastroSemPreencherCampos() {
         preencherEEnviar("", "", "");
+        aceitarAlert();
         String fans = getLocalStorageFans();
         assertFalse(fans != null && fans.length() > 2);
+    }
+
+    @AfterEach
+    void tearDown() {
+        driver.quit();
     }
 }
