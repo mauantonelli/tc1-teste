@@ -89,5 +89,13 @@ public class testes_davi {
         assertFalse(fans != null && fans.contains("\"nome\":\"EmailEspaco\""));
     }
 
+    @Test
+    void testCadastroSemPreencherCampos() {
+        preencherEEnviar("", "", "");
+        String fans = getLocalStorageFans();
+        assertFalse(fans != null && fans.length() > 2);
+    }
+
+
 
 }
