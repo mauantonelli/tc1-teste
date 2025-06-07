@@ -82,5 +82,12 @@ public class testes_davi {
         assertFalse(fans != null && fans.contains("\"nome\":\"Decimal\""));
     }
 
+    @Test
+    void testEmailComEspacoNaoEhValido() {
+        preencherEEnviar("EmailEspaco", "email @exemplo.com", "30");
+        String fans = getLocalStorageFans();
+        assertFalse(fans != null && fans.contains("\"nome\":\"EmailEspaco\""));
+    }
+
 
 }
