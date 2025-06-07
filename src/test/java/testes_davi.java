@@ -132,4 +132,20 @@ public class testes_davi {
         String fans = (String) ((JavascriptExecutor) driver).executeScript("return localStorage.getItem('fans');");
         assertFalse(fans != null && fans.contains("Email Ruim"));
     }
+
+    @Test
+    void testIdadeComLetrasNaoEhPermitida() {
+        driver.get("https://davi-vert.vercel.app/index.html");
+
+        driver.findElement(By.id("nome")).sendKeys("Idade Letra");
+        driver.findElement(By.id("email")).sendKeys("letras@email.com");
+        driver.findElement(By.id("idade")).sendKeys("abc");
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+
+        try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
+
+        String fans = (String) ((JavascriptExecutor) driver).executeScript("return localStorage.getItem('fans');");
+        assertFalse(fans != null && fans.contains("letras@email.com"));
+    }
+
 }
