@@ -65,6 +65,34 @@ public class testes_davi {
         assertFalse(texto.contains("151"));
     }
 
+    @Test
+    void testEmailVazioNaoEhPermitido() {
+        driver.get("https://davi-vert.vercel.app/index.html");
+
+        WebElement nomeInput = driver.findElement(By.id("nome"));
+        nomeInput.sendKeys("Sem Email");
+
+        WebElement idadeInput = driver.findElement(By.id("idade"));
+        idadeInput.sendKeys("30");
+
+        WebElement chatInput = driver.findElement(By.id("chat"));
+        chatInput.sendKeys("Mensagem de teste");
+
+        WebElement enviarBtn = driver.findElement(By.tagName("button"));
+        enviarBtn.click();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        WebElement resultado = driver.findElement(By.id("resultado"));
+        String texto = resultado.getText();
+
+        assertFalse(texto.toLowerCase().contains("enviado") || texto.length() > 0);
+    }
+
     @AfterEach
     void tearDown() {
         driver.quit();
