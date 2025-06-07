@@ -117,4 +117,19 @@ public class testes_davi {
     void tearDown() {
         driver.quit();
     }
+
+    @Test
+    void testEmailInvalidoNaoEhPermitido() {
+        driver.get("https://davi-vert.vercel.app/index.html");
+
+        driver.findElement(By.id("nome")).sendKeys("Email Ruim");
+        driver.findElement(By.id("email")).sendKeys("emailinvalido");
+        driver.findElement(By.id("idade")).sendKeys("30");
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+
+        try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
+
+        String fans = (String) ((JavascriptExecutor) driver).executeScript("return localStorage.getItem('fans');");
+        assertFalse(fans != null && fans.contains("Email Ruim"));
+    }
 }
