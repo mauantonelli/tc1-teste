@@ -15,84 +15,63 @@ public class testes_davi {
         driver = new ChromeDriver();
     }
 
+    private void preencherEEnviar(String nome, String email, String idade) {
+        driver.get("https://davi-vert.vercel.app/index.html");
+        if (nome != null) driver.findElement(By.id("nome")).sendKeys(nome);
+        if (email != null) driver.findElement(By.id("email")).sendKeys(email);
+        if (idade != null) driver.findElement(By.id("idade")).sendKeys(idade);
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
+    }
+
+    private String getLocalStorageFans() {
+        return (String) ((JavascriptExecutor) driver).executeScript("return localStorage.getItem('fans');");
+    }
+
+    @Test
+    void testIdadeZeroEhPermitida() {
+        preencherEEnviar("Teste", "teste@email.com", "0");
+        String fans = getLocalStorageFans();
+        assertTrue(fans != null && (fans.contains("\"idade\":\"0\"") || fans.contains("\"idade\":0")));
+    }
+
+    @Test
+    void testIdadeMaiorQue150NaoEhPermitida() {
+        preencherEEnviar("Velhíssimo", "velho@email.com", "151");
+        String fans = getLocalStorageFans();
+        assertFalse(fans != null && (fans.contains("\"idade\":\"151\"") || fans.contains("\"idade\":151")));
+    }
+
     @Test
     void testEmailVazioNaoEhPermitido() {
-        driver.get("https://davi-vert.vercel.app/index.html");
-
-        WebElement nomeInput = driver.findElement(By.id("nome"));
-        nomeInput.sendKeys("Sem Email");
-
-        WebElement idadeInput = driver.findElement(By.id("idade"));
-        idadeInput.sendKeys("30");
-
-        WebElement enviarBtn = driver.findElement(By.cssSelector("button[type='submit']"));
-        enviarBtn.click();
-
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        String localStorageFans = (String) ((JavascriptExecutor) driver).executeScript("return localStorage.getItem('fans');");
-        assertFalse(localStorageFans != null && localStorageFans.contains("Sem Email"));
+        preencherEEnviar("Sem Email", null, "30");
+        String fans = getLocalStorageFans();
+        assertFalse(fans != null && fans.contains("Sem Email"));
     }
 
     @Test
     void testNomeVazioNaoEhPermitido() {
-        driver.get("https://davi-vert.vercel.app/index.html");
-
-        WebElement emailInput = driver.findElement(By.id("email"));
-        emailInput.sendKeys("teste@email.com");
-
-        WebElement idadeInput = driver.findElement(By.id("idade"));
-        idadeInput.sendKeys("25");
-
-        WebElement enviarBtn = driver.findElement(By.cssSelector("button[type='submit']"));
-        enviarBtn.click();
-
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        String localStorageFans = (String) ((JavascriptExecutor) driver).executeScript("return localStorage.getItem('fans');");
-        assertFalse(localStorageFans != null && localStorageFans.contains("teste@email.com"));
-    }
-
-    @AfterEach
-    void tearDown() {
-        driver.quit();
+        preencherEEnviar(null, "teste@email.com", "25");
+        String fans = getLocalStorageFans();
+        assertFalse(fans != null && fans.contains("teste@email.com"));
     }
 
     @Test
     void testEmailInvalidoNaoEhPermitido() {
-        driver.get("https://davi-vert.vercel.app/index.html");
-
-        driver.findElement(By.id("nome")).sendKeys("Email Ruim");
-        driver.findElement(By.id("email")).sendKeys("emailinvalido");
-        driver.findElement(By.id("idade")).sendKeys("30");
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
-
-        try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
-
-        String fans = (String) ((JavascriptExecutor) driver).executeScript("return localStorage.getItem('fans');");
+        preencherEEnviar("Email Ruim", "emailinvalido", "30");
+        String fans = getLocalStorageFans();
         assertFalse(fans != null && fans.contains("Email Ruim"));
     }
 
     @Test
     void testIdadeComLetrasNaoEhPermitida() {
-        driver.get("https://davi-vert.vercel.app/index.html");
-
-        driver.findElement(By.id("nome")).sendKeys("Idade Letra");
-        driver.findElement(By.id("email")).sendKeys("letras@email.com");
-        driver.findElement(By.id("idade")).sendKeys("abc");
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
-
-        try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
-
-        String fans = (String) ((JavascriptExecutor) driver).executeScript("return localStorage.getItem('fans');");
+        preencherEEnviar("Idade Letra", "letras@email.com", "abc");
+        String fans = getLocalStorageFans();
         assertFalse(fans != null && fans.contains("letras@email.com"));
+    }
+
+    @AfterEach
+    void tearDown() {
+        driver.quit();
     }
 }
