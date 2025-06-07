@@ -74,4 +74,13 @@ public class testes_davi {
     void tearDown() {
         driver.quit();
     }
+
+    @Test
+    void testIdadeDecimalNaoEhPermitida() {
+        preencherEEnviar("Decimal", "decimal@exemplo.com", "25.5");
+        String fans = getLocalStorageFans();
+        assertFalse(fans != null && fans.contains("\"nome\":\"Decimal\""));
+    }
+
+
 }
