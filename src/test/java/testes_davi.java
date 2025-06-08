@@ -11,17 +11,20 @@ import java.time.Duration;
 public class testes_davi {
 
     private WebDriver driver;
+    private WebDriverWait wait;
 
     @BeforeEach
     void setUp() {
         WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
+        wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         driver.get("https://davi-vert.vercel.app/index.html");
         ((JavascriptExecutor) driver).executeScript("localStorage.clear();");
     }
 
     private void preencherEEnviar(String nome, String email, String idade) {
         driver.get("https://davi-vert.vercel.app/index.html");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("nome")));
         if (nome != null) driver.findElement(By.id("nome")).sendKeys(nome);
         if (email != null) driver.findElement(By.id("email")).sendKeys(email);
         if (idade != null) driver.findElement(By.id("idade")).sendKeys(idade);
@@ -30,10 +33,9 @@ public class testes_davi {
 
     private void aceitarAlert() {
         try {
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
             wait.until(ExpectedConditions.alertIsPresent());
             driver.switchTo().alert().accept();
-        } catch (Exception e) {
+        } catch (TimeoutException ignored) {
         }
     }
 
