@@ -4,6 +4,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import com.github.javafaker.Faker;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.Duration;
@@ -12,6 +13,7 @@ public class testes_davi {
 
     private WebDriver driver;
     private WebDriverWait wait;
+    private Faker faker = new Faker();
 
     @BeforeEach
     void setUp() {
@@ -115,11 +117,6 @@ public class testes_davi {
         assertFalse(fans != null && fans.length() > 2);
     }
 
-    @AfterEach
-    void tearDown() {
-        driver.quit();
-    }
-
     @Test
     void testBotaoVerFansRedirecionaParaLista() {
         WebElement botao = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Ver Fãs Cadastrados')]")));
@@ -152,5 +149,20 @@ public class testes_davi {
         assertTrue(fans == null || !fans.contains("12345"));
     }
 
+    @Test
+    void testCadastroComDadosFake() {
+        String nomeFake = faker.name().fullName();
+        String emailFake = faker.internet().emailAddress();
+        String idadeFake = String.valueOf(faker.number().numberBetween(18, 100));
+        preencherEEnviar(nomeFake, emailFake, idadeFake);
+        aceitarAlert();
+        String fans = getLocalStorageFans();
+        assertTrue(fans != null && fans.contains(nomeFake));
+    }
+
+    @AfterEach
+    void tearDown() {
+        driver.quit();
+    }
 
 }
