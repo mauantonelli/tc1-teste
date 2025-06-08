@@ -47,7 +47,7 @@ public class testes_davi {
 
     @Test
     void testIdadeZeroEhPermitida() {
-        preencherEEnviar("Teste", "teste@email.com", "0");
+        preencherEEnviar(faker.name().firstName(), faker.internet().emailAddress(), "0");
         aceitarAlert();
         String fans = getLocalStorageFans();
         assertTrue(fans != null && fans.contains("\"idade\":\"0\""));
@@ -55,7 +55,7 @@ public class testes_davi {
 
     @Test
     void testIdadeMaiorQue150NaoEhPermitida() {
-        preencherEEnviar("Velhíssimo", "velho@email.com", "151");
+        preencherEEnviar(faker.name().firstName(), faker.internet().emailAddress(), "151");
         aceitarAlert();
         String fans = getLocalStorageFans();
         assertFalse(fans != null && fans.contains("\"idade\":\"151\""));
@@ -63,50 +63,50 @@ public class testes_davi {
 
     @Test
     void testEmailVazioNaoEhPermitido() {
-        preencherEEnviar("Sem Email", null, "30");
+        preencherEEnviar(faker.name().fullName(), null, "30");
         aceitarAlert();
         String fans = getLocalStorageFans();
-        assertFalse(fans != null && fans.contains("Sem Email"));
+        assertFalse(fans != null && fans.contains("\"nome\":\"" + faker.name().fullName() + "\""));
     }
 
     @Test
     void testNomeVazioNaoEhPermitido() {
-        preencherEEnviar(null, "teste@email.com", "25");
+        preencherEEnviar(null, faker.internet().emailAddress(), "25");
         aceitarAlert();
         String fans = getLocalStorageFans();
-        assertFalse(fans != null && fans.contains("teste@email.com"));
+        assertFalse(fans != null && fans.contains(faker.internet().emailAddress()));
     }
 
     @Test
     void testEmailInvalidoNaoEhPermitido() {
-        preencherEEnviar("Email Ruim", "emailinvalido", "30");
+        preencherEEnviar(faker.name().fullName(), "emailinvalido", "30");
         aceitarAlert();
         String fans = getLocalStorageFans();
-        assertFalse(fans != null && fans.contains("Email Ruim"));
+        assertFalse(fans != null && fans.contains(faker.name().fullName()));
     }
 
     @Test
     void testIdadeComLetrasNaoEhPermitida() {
-        preencherEEnviar("Idade Letra", "letras@email.com", "abc");
+        preencherEEnviar(faker.name().fullName(), faker.internet().emailAddress(), "abc");
         aceitarAlert();
         String fans = getLocalStorageFans();
-        assertFalse(fans != null && fans.contains("letras@email.com"));
+        assertFalse(fans != null && fans.contains(faker.internet().emailAddress()));
     }
 
     @Test
     void testIdadeDecimalNaoEhPermitida() {
-        preencherEEnviar("Decimal", "decimal@exemplo.com", "25.5");
+        preencherEEnviar(faker.name().fullName(), faker.internet().emailAddress(), "25.5");
         aceitarAlert();
         String fans = getLocalStorageFans();
-        assertFalse(fans != null && fans.contains("\"nome\":\"Decimal\""));
+        assertFalse(fans != null && fans.contains("\"nome\":\"" + faker.name().fullName() + "\""));
     }
 
     @Test
     void testEmailComEspacoNaoEhValido() {
-        preencherEEnviar("EmailEspaco", "email @exemplo.com", "30");
+        preencherEEnviar(faker.name().firstName(), "email @exemplo.com", "30");
         aceitarAlert();
         String fans = getLocalStorageFans();
-        assertFalse(fans != null && fans.contains("\"nome\":\"EmailEspaco\""));
+        assertFalse(fans != null && fans.contains("\"nome\":\"" + faker.name().firstName() + "\""));
     }
 
     @Test
@@ -135,15 +135,15 @@ public class testes_davi {
 
     @Test
     void testIdadeNegativaNaoEhPermitida() {
-        preencherEEnviar("Nome Negativo", "negativo@email.com", "-1");
+        preencherEEnviar(faker.name().fullName(), faker.internet().emailAddress(), "-1");
         aceitarAlert();
         String fans = getLocalStorageFans();
-        assertTrue(fans == null || !fans.contains("Nome Negativo"));
+        assertTrue(fans == null || !fans.contains("\"nome\":\"" + faker.name().fullName() + "\""));
     }
 
     @Test
     void testNomeComoNumeroNaoEhPermitido() {
-        preencherEEnviar("12345", "numero@email.com", "25");
+        preencherEEnviar("12345", faker.internet().emailAddress(), "25");
         aceitarAlert();
         String fans = getLocalStorageFans();
         assertTrue(fans == null || !fans.contains("12345"));
