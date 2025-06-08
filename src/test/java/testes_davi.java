@@ -136,5 +136,14 @@ public class testes_davi {
         assertTrue(fans == null || fans.equals("[]"));
     }
 
+    @Test
+    void testIdadeNegativaNaoEhPermitida() {
+        preencherEEnviar("Nome Negativo", "negativo@email.com", "-1");
+        aceitarAlert();
+        String fans = getLocalStorageFans();
+        assertTrue(fans == null || !fans.contains("Nome Negativo"));
+    }
+
+
 
 }
