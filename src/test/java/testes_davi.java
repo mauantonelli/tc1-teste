@@ -119,4 +119,13 @@ public class testes_davi {
     void tearDown() {
         driver.quit();
     }
+
+    @Test
+    void testBotaoVerFansRedirecionaParaLista() {
+        WebElement botao = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Ver Fãs Cadastrados')]")));
+        botao.click();
+        wait.until(ExpectedConditions.urlContains("lista.html"));
+        assertTrue(driver.getCurrentUrl().endsWith("lista.html"));
+    }
+
 }
