@@ -144,6 +144,13 @@ public class testes_davi {
         assertTrue(fans == null || !fans.contains("Nome Negativo"));
     }
 
+    @Test
+    void testNomeComoNumeroNaoEhPermitido() {
+        preencherEEnviar("12345", "numero@email.com", "25");
+        aceitarAlert();
+        String fans = getLocalStorageFans();
+        assertTrue(fans == null || !fans.contains("12345"));
+    }
 
 
 }
