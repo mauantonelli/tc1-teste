@@ -128,4 +128,13 @@ public class testes_davi {
         assertTrue(driver.getCurrentUrl().endsWith("lista.html"));
     }
 
+    @Test
+    void testCamposComEspacosApenasNaoSaoPermitidos() {
+        preencherEEnviar("   ", "   ", "   ");
+        aceitarAlert();
+        String fans = getLocalStorageFans();
+        assertTrue(fans == null || fans.equals("[]"));
+    }
+
+
 }
