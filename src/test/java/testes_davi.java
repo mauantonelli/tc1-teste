@@ -9,8 +9,9 @@ import com.github.javafaker.Faker;
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.Duration;
 
-@DisplayName("Testes de Validação e Navegação do Formulário Davi")
+@DisplayName("Testes do Formulário Davi")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Tag("formulario")
 public class testes_davi {
 
     private static final String BASE_URL = "https://davi-vert.vercel.app/";
@@ -20,27 +21,31 @@ public class testes_davi {
     private WebDriver driver;
     private WebDriverWait wait;
     private Faker faker;
+    private String nomeFake;
+    private String emailFake;
+    private String idadeFake;
 
     @BeforeAll
-    void beforeAll() {
+    void inicializar() {
         WebDriverManager.chromedriver().setup();
         faker = new Faker();
     }
 
     @BeforeEach
-    void setUp() {
+    void preparar() {
         driver = new ChromeDriver();
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         driver.manage().window().setSize(new Dimension(1280, 720));
         driver.get(INDEX_PAGE);
         ((JavascriptExecutor) driver).executeScript("localStorage.clear();");
+        nomeFake = faker.name().fullName();
+        emailFake = faker.internet().emailAddress();
+        idadeFake = String.valueOf(faker.number().numberBetween(1, 100));
     }
 
-    private void preencherEEnviar(String nome, String email, String idade) {
-        if (!driver.getCurrentUrl().equals(INDEX_PAGE)) {
-            driver.get(INDEX_PAGE);
-        }
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("nome")));
+    private void preencherFormulario(String nome, String email, String idade) {
+        if (!driver.getCurrentUrl().equals(INDEX_PAGE)) driver.get(INDEX_PAGE);
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("nome")));
         WebElement inputNome = driver.findElement(By.id("nome"));
         WebElement inputEmail = driver.findElement(By.id("email"));
         WebElement inputIdade = driver.findElement(By.id("idade"));
@@ -53,179 +58,152 @@ public class testes_davi {
         driver.findElement(By.cssSelector("button[type='submit']")).click();
     }
 
-    private void aceitarAlert() {
+    private void aceitarAlerta() {
         try {
             wait.until(ExpectedConditions.alertIsPresent());
             driver.switchTo().alert().accept();
         } catch (TimeoutException ignored) {}
     }
 
-    private String getLocalStorageFans() {
+    private String obterFansDoLocalStorage() {
         return (String) ((JavascriptExecutor) driver).executeScript("return localStorage.getItem('fans');");
     }
 
     @Nested
-    @DisplayName("Validação do campo Idade")
-    class ValidacaoIdade {
+    @DisplayName("Campo Idade")
+    @Tag("idade")
+    class CampoIdade {
 
         @Test
-        @DisplayName("Permite idade zero")
-        void testIdadeZeroEhPermitida() {
-            String nome = faker.name().firstName();
-            String email = faker.internet().emailAddress();
-            preencherEEnviar(nome, email, "0");
-            aceitarAlert();
-            String fans = getLocalStorageFans();
+        void aceitaIdadeZero() {
+            preencherFormulario(nomeFake, emailFake, "0");
+            aceitarAlerta();
+            String fans = obterFansDoLocalStorage();
             assertTrue(fans != null && fans.contains("\"idade\":\"0\""));
         }
 
         @Test
-        @DisplayName("Não permite idade maior que 150")
-        void testIdadeMaiorQue150NaoEhPermitida() {
-            String nome = faker.name().firstName();
-            String email = faker.internet().emailAddress();
-            preencherEEnviar(nome, email, "151");
-            aceitarAlert();
-            String fans = getLocalStorageFans();
+        void rejeitaIdadeMaiorQue150() {
+            preencherFormulario(nomeFake, emailFake, "151");
+            aceitarAlerta();
+            String fans = obterFansDoLocalStorage();
             assertFalse(fans != null && fans.contains("\"idade\":\"151\""));
         }
 
         @Test
-        @DisplayName("Não permite idade negativa")
-        void testIdadeNegativaNaoEhPermitida() {
-            String nome = faker.name().fullName();
-            String email = faker.internet().emailAddress();
-            preencherEEnviar(nome, email, "-1");
-            aceitarAlert();
-            String fans = getLocalStorageFans();
-            assertFalse(fans != null && fans.contains("\"nome\":\"" + nome + "\""));
+        void rejeitaIdadeNegativa() {
+            preencherFormulario(nomeFake, emailFake, "-5");
+            aceitarAlerta();
+            String fans = obterFansDoLocalStorage();
+            assertFalse(fans != null && fans.contains(nomeFake));
         }
 
         @Test
-        @DisplayName("Não permite idade com letras")
-        void testIdadeComLetrasNaoEhPermitida() {
-            String nome = faker.name().fullName();
-            String email = faker.internet().emailAddress();
-            preencherEEnviar(nome, email, "abc");
-            aceitarAlert();
-            String fans = getLocalStorageFans();
-            assertFalse(fans != null && fans.contains(email));
+        void rejeitaIdadeComLetras() {
+            preencherFormulario(nomeFake, emailFake, "abc");
+            aceitarAlerta();
+            String fans = obterFansDoLocalStorage();
+            assertFalse(fans != null && fans.contains(emailFake));
         }
 
         @Test
-        @DisplayName("Não permite idade decimal")
-        void testIdadeDecimalNaoEhPermitida() {
-            String nome = faker.name().fullName();
-            String email = faker.internet().emailAddress();
-            preencherEEnviar(nome, email, "25.5");
-            aceitarAlert();
-            String fans = getLocalStorageFans();
-            assertFalse(fans != null && fans.contains("\"nome\":\"" + nome + "\""));
+        void rejeitaIdadeDecimal() {
+            preencherFormulario(nomeFake, emailFake, "10.5");
+            aceitarAlerta();
+            String fans = obterFansDoLocalStorage();
+            assertFalse(fans != null && fans.contains(nomeFake));
         }
     }
 
     @Nested
-    @DisplayName("Validação do campo Nome")
-    class ValidacaoNome {
+    @DisplayName("Campo Nome")
+    @Tag("nome")
+    class CampoNome {
 
         @Test
-        @DisplayName("Não permite nome vazio")
-        void testNomeVazioNaoEhPermitido() {
-            String email = faker.internet().emailAddress();
-            preencherEEnviar("", email, "25");
-            aceitarAlert();
-            String fans = getLocalStorageFans();
-            assertFalse(fans != null && fans.contains(email));
+        void rejeitaNomeVazio() {
+            preencherFormulario("", emailFake, idadeFake);
+            aceitarAlerta();
+            String fans = obterFansDoLocalStorage();
+            assertFalse(fans != null && fans.contains(emailFake));
         }
 
         @Test
-        @DisplayName("Não permite nome com apenas espaços")
-        void testCamposComEspacosApenasNaoSaoPermitidos() {
-            preencherEEnviar("   ", "   ", "   ");
-            aceitarAlert();
-            String fans = getLocalStorageFans();
+        void rejeitaApenasEspacos() {
+            preencherFormulario("   ", "   ", "   ");
+            aceitarAlerta();
+            String fans = obterFansDoLocalStorage();
             assertTrue(fans == null || fans.equals("[]"));
         }
 
         @Test
-        @DisplayName("Não permite nome como número")
-        void testNomeComoNumeroNaoEhPermitido() {
-            String email = faker.internet().emailAddress();
-            preencherEEnviar("12345", email, "25");
-            aceitarAlert();
-            String fans = getLocalStorageFans();
+        void rejeitaNomeComNumeros() {
+            preencherFormulario("12345", emailFake, idadeFake);
+            aceitarAlerta();
+            String fans = obterFansDoLocalStorage();
             assertFalse(fans != null && fans.contains("12345"));
         }
     }
 
     @Nested
-    @DisplayName("Validação do campo Email")
-    class ValidacaoEmail {
+    @DisplayName("Campo Email")
+    @Tag("email")
+    class CampoEmail {
 
         @Test
-        @DisplayName("Não permite email vazio")
-        void testEmailVazioNaoEhPermitido() {
-            String nome = faker.name().fullName();
-            preencherEEnviar(nome, "", "30");
-            aceitarAlert();
-            String fans = getLocalStorageFans();
-            assertFalse(fans != null && fans.contains("\"nome\":\"" + nome + "\""));
+        void rejeitaEmailVazio() {
+            preencherFormulario(nomeFake, "", idadeFake);
+            aceitarAlerta();
+            String fans = obterFansDoLocalStorage();
+            assertFalse(fans != null && fans.contains(nomeFake));
         }
 
         @Test
-        @DisplayName("Não permite email inválido")
-        void testEmailInvalidoNaoEhPermitido() {
-            String nome = faker.name().fullName();
-            preencherEEnviar(nome, "emailinvalido", "30");
-            aceitarAlert();
-            String fans = getLocalStorageFans();
-            assertFalse(fans != null && fans.contains(nome));
+        void rejeitaEmailInvalido() {
+            preencherFormulario(nomeFake, "emailinvalido", idadeFake);
+            aceitarAlerta();
+            String fans = obterFansDoLocalStorage();
+            assertFalse(fans != null && fans.contains(nomeFake));
         }
 
         @Test
-        @DisplayName("Não permite email com espaço")
-        void testEmailComEspacoNaoEhValido() {
-            String nome = faker.name().firstName();
-            preencherEEnviar(nome, "email @exemplo.com", "30");
-            aceitarAlert();
-            String fans = getLocalStorageFans();
-            assertFalse(fans != null && fans.contains("\"nome\":\"" + nome + "\""));
+        void rejeitaEmailComEspaco() {
+            preencherFormulario(nomeFake, "email @exemplo.com", idadeFake);
+            aceitarAlerta();
+            String fans = obterFansDoLocalStorage();
+            assertFalse(fans != null && fans.contains(nomeFake));
         }
     }
 
     @Nested
-    @DisplayName("Testes Gerais de Cadastro")
-    class CadastroCompleto {
+    @DisplayName("Cadastro Completo")
+    @Tag("cadastro")
+    class Cadastro {
 
         @Test
-        @DisplayName("Não permite cadastro sem preencher campos")
-        void testCadastroSemPreencherCampos() {
-            preencherEEnviar("", "", "");
-            aceitarAlert();
-            String fans = getLocalStorageFans();
+        void rejeitaCadastroVazio() {
+            preencherFormulario("", "", "");
+            aceitarAlerta();
+            String fans = obterFansDoLocalStorage();
             assertFalse(fans != null && fans.length() > 2);
         }
 
         @Test
-        @DisplayName("Permite cadastro com dados fake válidos")
-        void testCadastroComDadosFake() {
-            String nomeFake = faker.name().fullName();
-            String emailFake = faker.internet().emailAddress();
-            String idadeFake = String.valueOf(faker.number().numberBetween(18, 100));
-            preencherEEnviar(nomeFake, emailFake, idadeFake);
-            aceitarAlert();
-            String fans = getLocalStorageFans();
+        void aceitaCadastroValido() {
+            preencherFormulario(nomeFake, emailFake, idadeFake);
+            aceitarAlerta();
+            String fans = obterFansDoLocalStorage();
             assertTrue(fans != null && fans.contains(nomeFake));
         }
     }
 
     @Nested
-    @DisplayName("Testes de Navegação")
+    @DisplayName("Navegação")
+    @Tag("navegacao")
     class Navegacao {
 
         @Test
-        @DisplayName("Botão 'Ver Fãs Cadastrados' redireciona para lista")
-        void testBotaoVerFansRedirecionaParaLista() {
+        void botaoVerFansRedirecionaParaLista() {
             WebElement botao = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Ver Fãs Cadastrados')]")));
             botao.click();
             wait.until(ExpectedConditions.urlContains("lista.html"));
@@ -233,16 +211,14 @@ public class testes_davi {
         }
 
         @Test
-        @DisplayName("Página de lista tem tabela visível")
-        void testTabelaVisivelNaLista() {
+        void listaContemTabelaVisivel() {
             driver.get(LIST_PAGE);
-            WebElement tabela = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//table")));
+            WebElement tabela = wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("table")));
             assertTrue(tabela.isDisplayed());
         }
 
         @Test
-        @DisplayName("Botão 'Voltar' retorna para index")
-        void testBotaoVoltarRedirecionaParaIndex() {
+        void botaoVoltarRedirecionaParaIndex() {
             driver.get(LIST_PAGE);
             WebElement botaoVoltar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Voltar')]")));
             botaoVoltar.click();
@@ -252,12 +228,12 @@ public class testes_davi {
     }
 
     @Nested
-    @DisplayName("Testes de Interface e Layout")
+    @DisplayName("Interface e Layout")
+    @Tag("layout")
     class Interface {
 
         @Test
-        @DisplayName("Campos estão visíveis e habilitados")
-        void testCamposVisiveisEHabilitados() {
+        void camposVisiveisEHabilitados() {
             assertTrue(driver.findElement(By.id("nome")).isDisplayed());
             assertTrue(driver.findElement(By.id("email")).isDisplayed());
             assertTrue(driver.findElement(By.id("idade")).isDisplayed());
@@ -265,8 +241,7 @@ public class testes_davi {
         }
 
         @Test
-        @DisplayName("Layout não quebra em 500px de largura")
-        void testLayoutResponsivo() {
+        void layoutNaoQuebraEmLarguraPequena() {
             driver.manage().window().setSize(new Dimension(500, 800));
             assertTrue(driver.findElement(By.id("nome")).isDisplayed());
             assertTrue(driver.findElement(By.id("email")).isDisplayed());
@@ -274,7 +249,7 @@ public class testes_davi {
     }
 
     @AfterEach
-    void tearDown() {
+    void finalizar() {
         driver.quit();
     }
 }
