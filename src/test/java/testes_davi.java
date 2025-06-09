@@ -13,6 +13,10 @@ import java.time.Duration;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class testes_davi {
 
+    private static final String BASE_URL = "https://davi-vert.vercel.app/";
+    private static final String INDEX_PAGE = BASE_URL + "index.html";
+    private static final String LIST_PAGE = BASE_URL + "lista.html";
+
     private WebDriver driver;
     private WebDriverWait wait;
     private Faker faker;
@@ -28,12 +32,14 @@ public class testes_davi {
         driver = new ChromeDriver();
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         driver.manage().window().setSize(new Dimension(1280, 720));
-        driver.get("https://davi-vert.vercel.app/index.html");
+        driver.get(INDEX_PAGE);
         ((JavascriptExecutor) driver).executeScript("localStorage.clear();");
     }
 
     private void preencherEEnviar(String nome, String email, String idade) {
-        driver.get("https://davi-vert.vercel.app/index.html");
+        if (!driver.getCurrentUrl().equals(INDEX_PAGE)) {
+            driver.get(INDEX_PAGE);
+        }
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("nome")));
         WebElement inputNome = driver.findElement(By.id("nome"));
         WebElement inputEmail = driver.findElement(By.id("email"));
@@ -51,8 +57,7 @@ public class testes_davi {
         try {
             wait.until(ExpectedConditions.alertIsPresent());
             driver.switchTo().alert().accept();
-        } catch (TimeoutException ignored) {
-        }
+        } catch (TimeoutException ignored) {}
     }
 
     private String getLocalStorageFans() {
@@ -230,7 +235,7 @@ public class testes_davi {
         @Test
         @DisplayName("Página de lista tem tabela visível")
         void testTabelaVisivelNaLista() {
-            driver.get("https://davi-vert.vercel.app/lista.html");
+            driver.get(LIST_PAGE);
             WebElement tabela = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//table")));
             assertTrue(tabela.isDisplayed());
         }
@@ -238,7 +243,7 @@ public class testes_davi {
         @Test
         @DisplayName("Botão 'Voltar' retorna para index")
         void testBotaoVoltarRedirecionaParaIndex() {
-            driver.get("https://davi-vert.vercel.app/lista.html");
+            driver.get(LIST_PAGE);
             WebElement botaoVoltar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Voltar')]")));
             botaoVoltar.click();
             wait.until(ExpectedConditions.urlContains("index.html"));
