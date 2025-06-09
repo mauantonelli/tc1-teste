@@ -98,7 +98,7 @@ public class testes_davi {
             preencherEEnviar(nome, email, "-1");
             aceitarAlert();
             String fans = getLocalStorageFans();
-            assertTrue(fans == null || !fans.contains("\"nome\":\"" + nome + "\""));
+            assertFalse(fans != null && fans.contains("\"nome\":\"" + nome + "\""));
         }
 
         @Test
@@ -120,7 +120,7 @@ public class testes_davi {
             preencherEEnviar(nome, email, "25.5");
             aceitarAlert();
             String fans = getLocalStorageFans();
-            assertTrue(fans == null || !fans.contains("\"nome\":\"" + nome + "\""));
+            assertFalse(fans != null && fans.contains("\"nome\":\"" + nome + "\""));
         }
     }
 
@@ -154,7 +154,7 @@ public class testes_davi {
             preencherEEnviar("12345", email, "25");
             aceitarAlert();
             String fans = getLocalStorageFans();
-            assertTrue(fans == null || !fans.contains("12345"));
+            assertFalse(fans != null && fans.contains("12345"));
         }
     }
 
