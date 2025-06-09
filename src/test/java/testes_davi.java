@@ -75,6 +75,7 @@ public class testes_davi {
     class CampoIdade {
 
         @Test
+        @DisplayName("Aceita idade igual a 0")
         void aceitaIdadeZero() {
             preencherFormulario(nomeFake, emailFake, "0");
             aceitarAlerta();
@@ -83,6 +84,7 @@ public class testes_davi {
         }
 
         @Test
+        @DisplayName("Rejeita idade maior que 150")
         void rejeitaIdadeMaiorQue150() {
             preencherFormulario(nomeFake, emailFake, "151");
             aceitarAlerta();
@@ -91,6 +93,7 @@ public class testes_davi {
         }
 
         @Test
+        @DisplayName("Rejeita idade negativa")
         void rejeitaIdadeNegativa() {
             preencherFormulario(nomeFake, emailFake, "-5");
             aceitarAlerta();
@@ -99,6 +102,7 @@ public class testes_davi {
         }
 
         @Test
+        @DisplayName("Rejeita idade com letras")
         void rejeitaIdadeComLetras() {
             preencherFormulario(nomeFake, emailFake, "abc");
             aceitarAlerta();
@@ -107,6 +111,7 @@ public class testes_davi {
         }
 
         @Test
+        @DisplayName("Rejeita idade decimal")
         void rejeitaIdadeDecimal() {
             preencherFormulario(nomeFake, emailFake, "10.5");
             aceitarAlerta();
@@ -121,6 +126,7 @@ public class testes_davi {
     class CampoNome {
 
         @Test
+        @DisplayName("Rejeita nome vazio")
         void rejeitaNomeVazio() {
             preencherFormulario("", emailFake, idadeFake);
             aceitarAlerta();
@@ -129,6 +135,7 @@ public class testes_davi {
         }
 
         @Test
+        @DisplayName("Rejeita nome com apenas espaços")
         void rejeitaApenasEspacos() {
             preencherFormulario("   ", "   ", "   ");
             aceitarAlerta();
@@ -137,6 +144,7 @@ public class testes_davi {
         }
 
         @Test
+        @DisplayName("Rejeita nome com números")
         void rejeitaNomeComNumeros() {
             preencherFormulario("12345", emailFake, idadeFake);
             aceitarAlerta();
@@ -151,6 +159,7 @@ public class testes_davi {
     class CampoEmail {
 
         @Test
+        @DisplayName("Rejeita email vazio")
         void rejeitaEmailVazio() {
             preencherFormulario(nomeFake, "", idadeFake);
             aceitarAlerta();
@@ -159,6 +168,7 @@ public class testes_davi {
         }
 
         @Test
+        @DisplayName("Rejeita email sem formato válido")
         void rejeitaEmailInvalido() {
             preencherFormulario(nomeFake, "emailinvalido", idadeFake);
             aceitarAlerta();
@@ -167,6 +177,7 @@ public class testes_davi {
         }
 
         @Test
+        @DisplayName("Rejeita email com espaço")
         void rejeitaEmailComEspaco() {
             preencherFormulario(nomeFake, "email @exemplo.com", idadeFake);
             aceitarAlerta();
@@ -181,6 +192,7 @@ public class testes_davi {
     class Cadastro {
 
         @Test
+        @DisplayName("Rejeita envio com todos os campos vazios")
         void rejeitaCadastroVazio() {
             preencherFormulario("", "", "");
             aceitarAlerta();
@@ -189,6 +201,7 @@ public class testes_davi {
         }
 
         @Test
+        @DisplayName("Aceita cadastro válido com dados gerados")
         void aceitaCadastroValido() {
             preencherFormulario(nomeFake, emailFake, idadeFake);
             aceitarAlerta();
@@ -203,6 +216,7 @@ public class testes_davi {
     class Navegacao {
 
         @Test
+        @DisplayName("Botão 'Ver Fãs Cadastrados' redireciona para lista")
         void botaoVerFansRedirecionaParaLista() {
             WebElement botao = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Ver Fãs Cadastrados')]")));
             botao.click();
@@ -211,6 +225,7 @@ public class testes_davi {
         }
 
         @Test
+        @DisplayName("Página de lista contém tabela visível")
         void listaContemTabelaVisivel() {
             driver.get(LIST_PAGE);
             WebElement tabela = wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("table")));
@@ -218,6 +233,7 @@ public class testes_davi {
         }
 
         @Test
+        @DisplayName("Botão 'Voltar' redireciona para index")
         void botaoVoltarRedirecionaParaIndex() {
             driver.get(LIST_PAGE);
             WebElement botaoVoltar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Voltar')]")));
@@ -233,6 +249,7 @@ public class testes_davi {
     class Interface {
 
         @Test
+        @DisplayName("Campos são visíveis e botão está habilitado")
         void camposVisiveisEHabilitados() {
             assertTrue(driver.findElement(By.id("nome")).isDisplayed());
             assertTrue(driver.findElement(By.id("email")).isDisplayed());
@@ -241,6 +258,7 @@ public class testes_davi {
         }
 
         @Test
+        @DisplayName("Layout se adapta em tela pequena")
         void layoutNaoQuebraEmLarguraPequena() {
             driver.manage().window().setSize(new Dimension(500, 800));
             assertTrue(driver.findElement(By.id("nome")).isDisplayed());
