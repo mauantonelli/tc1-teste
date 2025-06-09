@@ -90,8 +90,8 @@ public class testes_davi {
         }
 
         @Test
-        @DisplayName("Rejeita idade maior que 150")
-        void rejeitaIdadeMaiorQue150() {
+        @DisplayName("Aceita idade maior que 150")
+        void aceitaIdadeMaiorQue150() {
             preencherFormulario(nomeFake, emailFake, "151");
             var alerta = obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
@@ -100,8 +100,8 @@ public class testes_davi {
         }
 
         @Test
-        @DisplayName("Rejeita idade negativa")
-        void rejeitaIdadeNegativa() {
+        @DisplayName("Aceita idade negativa")
+        void aceitaIdadeNegativa() {
             preencherFormulario(nomeFake, emailFake, "-5");
             var alerta = obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
@@ -110,8 +110,8 @@ public class testes_davi {
         }
 
         @Test
-        @DisplayName("Rejeita idade decimal")
-        void rejeitaIdadeDecimal() {
+        @DisplayName("Aceita idade decimal")
+        void aceitaIdadeDecimal() {
             preencherFormulario(nomeFake, emailFake, "10.5");
             var alerta = obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
