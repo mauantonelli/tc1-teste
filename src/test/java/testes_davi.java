@@ -46,9 +46,9 @@ public class testes_davi {
     private void preencherFormulario(String nome, String email, String idade) {
         if (!driver.getCurrentUrl().equals(INDEX_PAGE)) driver.get(INDEX_PAGE);
         wait.until(ExpectedConditions.elementToBeClickable(By.id("nome")));
-        WebElement inputNome = driver.findElement(By.id("nome"));
-        WebElement inputEmail = driver.findElement(By.id("email"));
-        WebElement inputIdade = driver.findElement(By.id("idade"));
+        var inputNome = driver.findElement(By.id("nome"));
+        var inputEmail = driver.findElement(By.id("email"));
+        var inputIdade = driver.findElement(By.id("idade"));
         inputNome.clear();
         inputEmail.clear();
         inputIdade.clear();
@@ -61,8 +61,8 @@ public class testes_davi {
     private String obterTextoDoAlerta() {
         try {
             wait.until(ExpectedConditions.alertIsPresent());
-            Alert alert = driver.switchTo().alert();
-            String texto = alert.getText();
+            var alert = driver.switchTo().alert();
+            var texto = alert.getText();
             alert.accept();
             return texto;
         } catch (TimeoutException e) {
@@ -83,9 +83,9 @@ public class testes_davi {
         @DisplayName("Aceita idade igual a 0")
         void aceitaIdadeZero() {
             preencherFormulario(nomeFake, emailFake, "0");
-            String alerta = obterTextoDoAlerta();
+            var alerta = obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
-            String fans = obterFansDoLocalStorage();
+            var fans = obterFansDoLocalStorage();
             assertTrue(fans != null && fans.contains("\"idade\":\"0\""));
         }
 
@@ -93,9 +93,9 @@ public class testes_davi {
         @DisplayName("Rejeita idade maior que 150")
         void rejeitaIdadeMaiorQue150() {
             preencherFormulario(nomeFake, emailFake, "151");
-            String alerta = obterTextoDoAlerta();
+            var alerta = obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
-            String fans = obterFansDoLocalStorage();
+            var fans = obterFansDoLocalStorage();
             assertTrue(fans != null && fans.contains("\"idade\":\"151\""));
         }
 
@@ -103,9 +103,9 @@ public class testes_davi {
         @DisplayName("Rejeita idade negativa")
         void rejeitaIdadeNegativa() {
             preencherFormulario(nomeFake, emailFake, "-5");
-            String alerta = obterTextoDoAlerta();
+            var alerta = obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
-            String fans = obterFansDoLocalStorage();
+            var fans = obterFansDoLocalStorage();
             assertTrue(fans != null && fans.contains("\"idade\":\"-5\""));
         }
 
@@ -113,9 +113,9 @@ public class testes_davi {
         @DisplayName("Rejeita idade decimal")
         void rejeitaIdadeDecimal() {
             preencherFormulario(nomeFake, emailFake, "10.5");
-            String alerta = obterTextoDoAlerta();
+            var alerta = obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
-            String fans = obterFansDoLocalStorage();
+            var fans = obterFansDoLocalStorage();
             assertTrue(fans != null && fans.contains("\"idade\":\"10.5\""));
         }
     }
@@ -129,9 +129,9 @@ public class testes_davi {
         @DisplayName("Rejeita nome vazio")
         void rejeitaNomeVazio() {
             preencherFormulario("", emailFake, idadeFake);
-            String alerta = obterTextoDoAlerta();
+            var alerta = obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
-            String fans = obterFansDoLocalStorage();
+            var fans = obterFansDoLocalStorage();
             assertTrue(fans == null || fans.equals("[]"));
         }
 
@@ -139,9 +139,9 @@ public class testes_davi {
         @DisplayName("Rejeita nome com apenas espaços")
         void rejeitaApenasEspacos() {
             preencherFormulario("   ", emailFake, idadeFake);
-            String alerta = obterTextoDoAlerta();
+            var alerta = obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
-            String fans = obterFansDoLocalStorage();
+            var fans = obterFansDoLocalStorage();
             assertTrue(fans == null || fans.equals("[]"));
         }
     }
@@ -155,9 +155,9 @@ public class testes_davi {
         @DisplayName("Rejeita email vazio")
         void rejeitaEmailVazio() {
             preencherFormulario(nomeFake, "", idadeFake);
-            String alerta = obterTextoDoAlerta();
+            var alerta = obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
-            String fans = obterFansDoLocalStorage();
+            var fans = obterFansDoLocalStorage();
             assertTrue(fans == null || fans.equals("[]"));
         }
 
@@ -165,9 +165,9 @@ public class testes_davi {
         @DisplayName("Rejeita email com espaço")
         void rejeitaEmailComEspaco() {
             preencherFormulario(nomeFake, "email @exemplo.com", idadeFake);
-            String alerta = obterTextoDoAlerta();
+            var alerta = obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
-            String fans = obterFansDoLocalStorage();
+            var fans = obterFansDoLocalStorage();
             assertTrue(fans == null || fans.equals("[]"));
         }
     }
@@ -181,9 +181,9 @@ public class testes_davi {
         @DisplayName("Rejeita envio com todos os campos vazios")
         void rejeitaCadastroVazio() {
             preencherFormulario("", "", "");
-            String alerta = obterTextoDoAlerta();
+            var alerta = obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
-            String fans = obterFansDoLocalStorage();
+            var fans = obterFansDoLocalStorage();
             assertTrue(fans == null || fans.equals("[]"));
         }
 
@@ -191,9 +191,9 @@ public class testes_davi {
         @DisplayName("Aceita cadastro válido com dados gerados")
         void aceitaCadastroValido() {
             preencherFormulario(nomeFake, emailFake, idadeFake);
-            String alerta = obterTextoDoAlerta();
+            var alerta = obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
-            String fans = obterFansDoLocalStorage();
+            var fans = obterFansDoLocalStorage();
             assertTrue(fans != null && fans.contains(nomeFake));
         }
     }
@@ -206,7 +206,7 @@ public class testes_davi {
         @Test
         @DisplayName("Botão 'Ver Fãs Cadastrados' redireciona para lista")
         void botaoVerFansRedirecionaParaLista() {
-            WebElement botao = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Ver Fãs Cadastrados')]")));
+            var botao = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Ver Fãs Cadastrados')]")));
             botao.click();
             wait.until(ExpectedConditions.urlContains("lista.html"));
             assertTrue(driver.getCurrentUrl().endsWith("lista.html"));
@@ -216,7 +216,7 @@ public class testes_davi {
         @DisplayName("Página de lista contém tabela visível")
         void listaContemTabelaVisivel() {
             driver.get(LIST_PAGE);
-            WebElement tabela = wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("table")));
+            var tabela = wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("table")));
             assertTrue(tabela.isDisplayed());
         }
 
@@ -224,7 +224,7 @@ public class testes_davi {
         @DisplayName("Botão 'Voltar' redireciona para index")
         void botaoVoltarRedirecionaParaIndex() {
             driver.get(LIST_PAGE);
-            WebElement botaoVoltar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Voltar')]")));
+            var botaoVoltar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Voltar')]")));
             botaoVoltar.click();
             wait.until(ExpectedConditions.urlContains("index.html"));
             assertTrue(driver.getCurrentUrl().endsWith("index.html"));
