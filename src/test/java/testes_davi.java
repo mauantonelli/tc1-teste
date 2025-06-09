@@ -10,17 +10,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.Duration;
 
 @DisplayName("Testes de Validação e Navegação do Formulário Davi")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class testes_davi {
 
     private WebDriver driver;
     private WebDriverWait wait;
-    private Faker faker = new Faker();
+    private Faker faker;
+
+    @BeforeAll
+    void beforeAll() {
+        WebDriverManager.chromedriver().setup();
+        faker = new Faker();
+    }
 
     @BeforeEach
     void setUp() {
-        WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
-        wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        driver.manage().window().setSize(new Dimension(1280, 720));
         driver.get("https://davi-vert.vercel.app/index.html");
         ((JavascriptExecutor) driver).executeScript("localStorage.clear();");
     }
@@ -28,9 +35,15 @@ public class testes_davi {
     private void preencherEEnviar(String nome, String email, String idade) {
         driver.get("https://davi-vert.vercel.app/index.html");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("nome")));
-        if (nome != null) driver.findElement(By.id("nome")).sendKeys(nome);
-        if (email != null) driver.findElement(By.id("email")).sendKeys(email);
-        if (idade != null) driver.findElement(By.id("idade")).sendKeys(idade);
+        WebElement inputNome = driver.findElement(By.id("nome"));
+        WebElement inputEmail = driver.findElement(By.id("email"));
+        WebElement inputIdade = driver.findElement(By.id("idade"));
+        inputNome.clear();
+        inputEmail.clear();
+        inputIdade.clear();
+        if (nome != null) inputNome.sendKeys(nome);
+        if (email != null) inputEmail.sendKeys(email);
+        if (idade != null) inputIdade.sendKeys(idade);
         driver.findElement(By.cssSelector("button[type='submit']")).click();
     }
 
@@ -53,7 +66,9 @@ public class testes_davi {
         @Test
         @DisplayName("Permite idade zero")
         void testIdadeZeroEhPermitida() {
-            preencherEEnviar(faker.name().firstName(), faker.internet().emailAddress(), "0");
+            String nome = faker.name().firstName();
+            String email = faker.internet().emailAddress();
+            preencherEEnviar(nome, email, "0");
             aceitarAlert();
             String fans = getLocalStorageFans();
             assertTrue(fans != null && fans.contains("\"idade\":\"0\""));
@@ -62,7 +77,9 @@ public class testes_davi {
         @Test
         @DisplayName("Não permite idade maior que 150")
         void testIdadeMaiorQue150NaoEhPermitida() {
-            preencherEEnviar(faker.name().firstName(), faker.internet().emailAddress(), "151");
+            String nome = faker.name().firstName();
+            String email = faker.internet().emailAddress();
+            preencherEEnviar(nome, email, "151");
             aceitarAlert();
             String fans = getLocalStorageFans();
             assertFalse(fans != null && fans.contains("\"idade\":\"151\""));
@@ -71,28 +88,34 @@ public class testes_davi {
         @Test
         @DisplayName("Não permite idade negativa")
         void testIdadeNegativaNaoEhPermitida() {
-            preencherEEnviar(faker.name().fullName(), faker.internet().emailAddress(), "-1");
+            String nome = faker.name().fullName();
+            String email = faker.internet().emailAddress();
+            preencherEEnviar(nome, email, "-1");
             aceitarAlert();
             String fans = getLocalStorageFans();
-            assertTrue(fans == null || !fans.contains("\"nome\":\"" + faker.name().fullName() + "\""));
+            assertTrue(fans == null || !fans.contains("\"nome\":\"" + nome + "\""));
         }
 
         @Test
         @DisplayName("Não permite idade com letras")
         void testIdadeComLetrasNaoEhPermitida() {
-            preencherEEnviar(faker.name().fullName(), faker.internet().emailAddress(), "abc");
+            String nome = faker.name().fullName();
+            String email = faker.internet().emailAddress();
+            preencherEEnviar(nome, email, "abc");
             aceitarAlert();
             String fans = getLocalStorageFans();
-            assertFalse(fans != null && fans.contains(faker.internet().emailAddress()));
+            assertFalse(fans != null && fans.contains(email));
         }
 
         @Test
         @DisplayName("Não permite idade decimal")
         void testIdadeDecimalNaoEhPermitida() {
-            preencherEEnviar(faker.name().fullName(), faker.internet().emailAddress(), "25.5");
+            String nome = faker.name().fullName();
+            String email = faker.internet().emailAddress();
+            preencherEEnviar(nome, email, "25.5");
             aceitarAlert();
             String fans = getLocalStorageFans();
-            assertFalse(fans != null && fans.contains("\"nome\":\"" + faker.name().fullName() + "\""));
+            assertTrue(fans == null || !fans.contains("\"nome\":\"" + nome + "\""));
         }
     }
 
@@ -103,10 +126,11 @@ public class testes_davi {
         @Test
         @DisplayName("Não permite nome vazio")
         void testNomeVazioNaoEhPermitido() {
-            preencherEEnviar(null, faker.internet().emailAddress(), "25");
+            String email = faker.internet().emailAddress();
+            preencherEEnviar("", email, "25");
             aceitarAlert();
             String fans = getLocalStorageFans();
-            assertFalse(fans != null && fans.contains(faker.internet().emailAddress()));
+            assertFalse(fans != null && fans.contains(email));
         }
 
         @Test
@@ -121,7 +145,8 @@ public class testes_davi {
         @Test
         @DisplayName("Não permite nome como número")
         void testNomeComoNumeroNaoEhPermitido() {
-            preencherEEnviar("12345", faker.internet().emailAddress(), "25");
+            String email = faker.internet().emailAddress();
+            preencherEEnviar("12345", email, "25");
             aceitarAlert();
             String fans = getLocalStorageFans();
             assertTrue(fans == null || !fans.contains("12345"));
@@ -135,28 +160,31 @@ public class testes_davi {
         @Test
         @DisplayName("Não permite email vazio")
         void testEmailVazioNaoEhPermitido() {
-            preencherEEnviar(faker.name().fullName(), null, "30");
+            String nome = faker.name().fullName();
+            preencherEEnviar(nome, "", "30");
             aceitarAlert();
             String fans = getLocalStorageFans();
-            assertFalse(fans != null && fans.contains("\"nome\":\"" + faker.name().fullName() + "\""));
+            assertFalse(fans != null && fans.contains("\"nome\":\"" + nome + "\""));
         }
 
         @Test
         @DisplayName("Não permite email inválido")
         void testEmailInvalidoNaoEhPermitido() {
-            preencherEEnviar(faker.name().fullName(), "emailinvalido", "30");
+            String nome = faker.name().fullName();
+            preencherEEnviar(nome, "emailinvalido", "30");
             aceitarAlert();
             String fans = getLocalStorageFans();
-            assertFalse(fans != null && fans.contains(faker.name().fullName()));
+            assertFalse(fans != null && fans.contains(nome));
         }
 
         @Test
         @DisplayName("Não permite email com espaço")
         void testEmailComEspacoNaoEhValido() {
-            preencherEEnviar(faker.name().firstName(), "email @exemplo.com", "30");
+            String nome = faker.name().firstName();
+            preencherEEnviar(nome, "email @exemplo.com", "30");
             aceitarAlert();
             String fans = getLocalStorageFans();
-            assertFalse(fans != null && fans.contains("\"nome\":\"" + faker.name().firstName() + "\""));
+            assertFalse(fans != null && fans.contains("\"nome\":\"" + nome + "\""));
         }
     }
 
