@@ -198,6 +198,46 @@ public class testes_davi {
             wait.until(ExpectedConditions.urlContains("lista.html"));
             assertTrue(driver.getCurrentUrl().endsWith("lista.html"));
         }
+
+        @Test
+        @DisplayName("Página de lista tem tabela visível")
+        void testTabelaVisivelNaLista() {
+            driver.get("https://davi-vert.vercel.app/lista.html");
+            WebElement tabela = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//table")));
+            assertTrue(tabela.isDisplayed());
+        }
+
+        @Test
+        @DisplayName("Botão 'Voltar' retorna para index")
+        void testBotaoVoltarRedirecionaParaIndex() {
+            driver.get("https://davi-vert.vercel.app/lista.html");
+            WebElement botaoVoltar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Voltar')]")));
+            botaoVoltar.click();
+            wait.until(ExpectedConditions.urlContains("index.html"));
+            assertTrue(driver.getCurrentUrl().endsWith("index.html"));
+        }
+    }
+
+    @Nested
+    @DisplayName("Testes de Interface e Layout")
+    class Interface {
+
+        @Test
+        @DisplayName("Campos estão visíveis e habilitados")
+        void testCamposVisiveisEHabilitados() {
+            assertTrue(driver.findElement(By.id("nome")).isDisplayed());
+            assertTrue(driver.findElement(By.id("email")).isDisplayed());
+            assertTrue(driver.findElement(By.id("idade")).isDisplayed());
+            assertTrue(driver.findElement(By.cssSelector("button[type='submit']")).isEnabled());
+        }
+
+        @Test
+        @DisplayName("Layout não quebra em 500px de largura")
+        void testLayoutResponsivo() {
+            driver.manage().window().setSize(new Dimension(500, 800));
+            assertTrue(driver.findElement(By.id("nome")).isDisplayed());
+            assertTrue(driver.findElement(By.id("email")).isDisplayed());
+        }
     }
 
     @AfterEach
