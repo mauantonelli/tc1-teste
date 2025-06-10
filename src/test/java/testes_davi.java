@@ -63,10 +63,8 @@ public class testes_davi {
         @DisplayName("Aceita idade igual a 0")
         void aceitaIdadeZero() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "0");
-            var alerta = cadastroPage.obterTextoDoAlerta();
-            assertEquals("Cadastro realizado com sucesso!", alerta);
-            var fans = obterFansDoLocalStorage();
-            assertTrue(fans != null && fans.contains("\"idade\":\"0\""));
+            assertEquals("Cadastro realizado com sucesso!", cadastroPage.obterTextoDoAlerta());
+            assertTrue(cadastroPage.fansContemIdade("0"));
         }
 
         @Test
