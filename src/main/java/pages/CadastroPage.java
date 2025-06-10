@@ -1,6 +1,7 @@
 package pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -33,6 +34,16 @@ public class CadastroPage {
         driver.findElement(By.cssSelector("button[type='submit']")).click();
     }
 
-
+    public String obterTextoDoAlerta() {
+        try {
+            wait.until(ExpectedConditions.alertIsPresent());
+            var alert = driver.switchTo().alert();
+            var texto = alert.getText();
+            alert.accept();
+            return texto;
+        } catch (TimeoutException e) {
+            return null;
+        }
+    }
 
 }

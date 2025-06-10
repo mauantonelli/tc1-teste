@@ -50,18 +50,6 @@ public class testes_davi {
 
     }
 
-    private String obterTextoDoAlerta() {
-        try {
-            wait.until(ExpectedConditions.alertIsPresent());
-            var alert = driver.switchTo().alert();
-            var texto = alert.getText();
-            alert.accept();
-            return texto;
-        } catch (TimeoutException e) {
-            return null;
-        }
-    }
-
     private String obterFansDoLocalStorage() {
         return (String) ((JavascriptExecutor) driver).executeScript("return localStorage.getItem('fans');");
     }
@@ -75,7 +63,7 @@ public class testes_davi {
         @DisplayName("Aceita idade igual a 0")
         void aceitaIdadeZero() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "0");
-            var alerta = obterTextoDoAlerta();
+            var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
             var fans = obterFansDoLocalStorage();
             assertTrue(fans != null && fans.contains("\"idade\":\"0\""));
@@ -85,7 +73,7 @@ public class testes_davi {
         @DisplayName("Aceita idade maior que 150")
         void aceitaIdadeMaiorQue150() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "151");
-            var alerta = obterTextoDoAlerta();
+            var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
             var fans = obterFansDoLocalStorage();
             assertTrue(fans != null && fans.contains("\"idade\":\"151\""));
@@ -95,7 +83,7 @@ public class testes_davi {
         @DisplayName("Aceita idade negativa")
         void aceitaIdadeNegativa() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "-5");
-            var alerta = obterTextoDoAlerta();
+            var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
             var fans = obterFansDoLocalStorage();
             assertTrue(fans != null && fans.contains("\"idade\":\"-5\""));
@@ -105,7 +93,7 @@ public class testes_davi {
         @DisplayName("Aceita idade decimal")
         void aceitaIdadeDecimal() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "10.5");
-            var alerta = obterTextoDoAlerta();
+            var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
             var fans = obterFansDoLocalStorage();
             assertTrue(fans != null && fans.contains("\"idade\":\"10.5\""));
@@ -121,7 +109,7 @@ public class testes_davi {
         @DisplayName("Rejeita nome vazio")
         void rejeitaNomeVazio() {
             cadastroPage.preencherFormulario("", emailFake, idadeFake);
-            var alerta = obterTextoDoAlerta();
+            var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
             var fans = obterFansDoLocalStorage();
             assertTrue(fans == null || fans.equals("[]"));
@@ -131,7 +119,7 @@ public class testes_davi {
         @DisplayName("Rejeita nome com apenas espaços")
         void rejeitaApenasEspacos() {
             cadastroPage.preencherFormulario("   ", emailFake, idadeFake);
-            var alerta = obterTextoDoAlerta();
+            var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
             var fans = obterFansDoLocalStorage();
             assertTrue(fans == null || fans.equals("[]"));
@@ -147,7 +135,7 @@ public class testes_davi {
         @DisplayName("Rejeita email vazio")
         void rejeitaEmailVazio() {
             cadastroPage.preencherFormulario(nomeFake, "", idadeFake);
-            var alerta = obterTextoDoAlerta();
+            var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
             var fans = obterFansDoLocalStorage();
             assertTrue(fans == null || fans.equals("[]"));
@@ -157,7 +145,7 @@ public class testes_davi {
         @DisplayName("Rejeita email com espaço")
         void rejeitaEmailComEspaco() {
             cadastroPage.preencherFormulario(nomeFake, "email @exemplo.com", idadeFake);
-            var alerta = obterTextoDoAlerta();
+            var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
             var fans = obterFansDoLocalStorage();
             assertTrue(fans == null || fans.equals("[]"));
@@ -173,7 +161,7 @@ public class testes_davi {
         @DisplayName("Rejeita envio com todos os campos vazios")
         void rejeitaCadastroVazio() {
             cadastroPage.preencherFormulario("", "", "");
-            var alerta = obterTextoDoAlerta();
+            var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
             var fans = obterFansDoLocalStorage();
             assertTrue(fans == null || fans.equals("[]"));
@@ -183,7 +171,7 @@ public class testes_davi {
         @DisplayName("Aceita cadastro válido com dados gerados")
         void aceitaCadastroValido() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, idadeFake);
-            var alerta = obterTextoDoAlerta();
+            var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
             var fans = obterFansDoLocalStorage();
             assertTrue(fans != null && fans.contains(nomeFake));
