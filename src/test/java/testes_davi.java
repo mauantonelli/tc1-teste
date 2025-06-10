@@ -5,6 +5,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import com.github.javafaker.Faker;
+import pages.CadastroPage;
+import pages.EditarDeletarPage;
 
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.Duration;
@@ -24,6 +26,8 @@ public class testes_davi {
     private String nomeFake;
     private String emailFake;
     private String idadeFake;
+    private CadastroPage cadastroPage;
+    private EditarDeletarPage editarDeletarPage;
 
     @BeforeAll
     void inicializar() {
@@ -41,21 +45,9 @@ public class testes_davi {
         nomeFake = faker.name().fullName();
         emailFake = faker.internet().emailAddress();
         idadeFake = String.valueOf(faker.number().numberBetween(1, 100));
-    }
+        cadastroPage = new CadastroPage(driver, wait);
+        editarDeletarPage = new EditarDeletarPage(driver, wait);
 
-    private void preencherFormulario(String nome, String email, String idade) {
-        if (!driver.getCurrentUrl().equals(INDEX_PAGE)) driver.get(INDEX_PAGE);
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("nome")));
-        var inputNome = driver.findElement(By.id("nome"));
-        var inputEmail = driver.findElement(By.id("email"));
-        var inputIdade = driver.findElement(By.id("idade"));
-        inputNome.clear();
-        inputEmail.clear();
-        inputIdade.clear();
-        if (nome != null) inputNome.sendKeys(nome);
-        if (email != null) inputEmail.sendKeys(email);
-        if (idade != null) inputIdade.sendKeys(idade);
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
     }
 
     private String obterTextoDoAlerta() {
@@ -82,7 +74,7 @@ public class testes_davi {
         @Test
         @DisplayName("Aceita idade igual a 0")
         void aceitaIdadeZero() {
-            preencherFormulario(nomeFake, emailFake, "0");
+            cadastroPage.preencherFormulario(nomeFake, emailFake, "0");
             var alerta = obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
             var fans = obterFansDoLocalStorage();
@@ -92,7 +84,7 @@ public class testes_davi {
         @Test
         @DisplayName("Aceita idade maior que 150")
         void aceitaIdadeMaiorQue150() {
-            preencherFormulario(nomeFake, emailFake, "151");
+            cadastroPage.preencherFormulario(nomeFake, emailFake, "151");
             var alerta = obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
             var fans = obterFansDoLocalStorage();
@@ -102,7 +94,7 @@ public class testes_davi {
         @Test
         @DisplayName("Aceita idade negativa")
         void aceitaIdadeNegativa() {
-            preencherFormulario(nomeFake, emailFake, "-5");
+            cadastroPage.preencherFormulario(nomeFake, emailFake, "-5");
             var alerta = obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
             var fans = obterFansDoLocalStorage();
@@ -112,7 +104,7 @@ public class testes_davi {
         @Test
         @DisplayName("Aceita idade decimal")
         void aceitaIdadeDecimal() {
-            preencherFormulario(nomeFake, emailFake, "10.5");
+            cadastroPage.preencherFormulario(nomeFake, emailFake, "10.5");
             var alerta = obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
             var fans = obterFansDoLocalStorage();
@@ -128,7 +120,7 @@ public class testes_davi {
         @Test
         @DisplayName("Rejeita nome vazio")
         void rejeitaNomeVazio() {
-            preencherFormulario("", emailFake, idadeFake);
+            cadastroPage.preencherFormulario("", emailFake, idadeFake);
             var alerta = obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
             var fans = obterFansDoLocalStorage();
@@ -138,7 +130,7 @@ public class testes_davi {
         @Test
         @DisplayName("Rejeita nome com apenas espaços")
         void rejeitaApenasEspacos() {
-            preencherFormulario("   ", emailFake, idadeFake);
+            cadastroPage.preencherFormulario("   ", emailFake, idadeFake);
             var alerta = obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
             var fans = obterFansDoLocalStorage();
@@ -154,7 +146,7 @@ public class testes_davi {
         @Test
         @DisplayName("Rejeita email vazio")
         void rejeitaEmailVazio() {
-            preencherFormulario(nomeFake, "", idadeFake);
+            cadastroPage.preencherFormulario(nomeFake, "", idadeFake);
             var alerta = obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
             var fans = obterFansDoLocalStorage();
@@ -164,7 +156,7 @@ public class testes_davi {
         @Test
         @DisplayName("Rejeita email com espaço")
         void rejeitaEmailComEspaco() {
-            preencherFormulario(nomeFake, "email @exemplo.com", idadeFake);
+            cadastroPage.preencherFormulario(nomeFake, "email @exemplo.com", idadeFake);
             var alerta = obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
             var fans = obterFansDoLocalStorage();
@@ -180,7 +172,7 @@ public class testes_davi {
         @Test
         @DisplayName("Rejeita envio com todos os campos vazios")
         void rejeitaCadastroVazio() {
-            preencherFormulario("", "", "");
+            cadastroPage.preencherFormulario("", "", "");
             var alerta = obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
             var fans = obterFansDoLocalStorage();
@@ -190,7 +182,7 @@ public class testes_davi {
         @Test
         @DisplayName("Aceita cadastro válido com dados gerados")
         void aceitaCadastroValido() {
-            preencherFormulario(nomeFake, emailFake, idadeFake);
+            cadastroPage.preencherFormulario(nomeFake, emailFake, idadeFake);
             var alerta = obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
             var fans = obterFansDoLocalStorage();
