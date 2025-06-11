@@ -71,10 +71,8 @@ public class testes_davi {
         @DisplayName("Aceita idade maior que 150")
         void aceitaIdadeMaiorQue150() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "151");
-            var alerta = cadastroPage.obterTextoDoAlerta();
-            assertEquals("Cadastro realizado com sucesso!", alerta);
-            var fans = obterFansDoLocalStorage();
-            assertTrue(fans != null && fans.contains("\"idade\":\"151\""));
+            assertEquals("Cadastro realizado com sucesso!", cadastroPage.obterTextoDoAlerta());
+            assertTrue(cadastroPage.fansContemIdade("151"));
         }
 
         @Test
