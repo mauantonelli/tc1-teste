@@ -50,10 +50,6 @@ public class testes_davi {
 
     }
 
-    private String obterFansDoLocalStorage() {
-        return (String) ((JavascriptExecutor) driver).executeScript("return localStorage.getItem('fans');");
-    }
-
     @Nested
     @DisplayName("Campo Idade")
     @Tag("idade")
@@ -79,10 +75,8 @@ public class testes_davi {
         @DisplayName("Aceita idade negativa")
         void aceitaIdadeNegativa() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "-5");
-            var alerta = cadastroPage.obterTextoDoAlerta();
-            assertEquals("Cadastro realizado com sucesso!", alerta);
-            var fans = obterFansDoLocalStorage();
-            assertTrue(fans != null && fans.contains("\"idade\":\"-5\""));
+            assertEquals("Cadastro realizado com sucesso!", cadastroPage.obterTextoDoAlerta());
+            assertTrue(cadastroPage.fansContemIdade("-5"));
         }
 
         @Test
@@ -91,7 +85,7 @@ public class testes_davi {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "10.5");
             var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
-            var fans = obterFansDoLocalStorage();
+            var fans = cadastroPage.obterFansDoLocalStorage();
             assertTrue(fans != null && fans.contains("\"idade\":\"10.5\""));
         }
     }
@@ -107,7 +101,7 @@ public class testes_davi {
             cadastroPage.preencherFormulario("", emailFake, idadeFake);
             var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
-            var fans = obterFansDoLocalStorage();
+            var fans = cadastroPage.obterFansDoLocalStorage();
             assertTrue(fans == null || fans.equals("[]"));
         }
 
@@ -117,7 +111,7 @@ public class testes_davi {
             cadastroPage.preencherFormulario("   ", emailFake, idadeFake);
             var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
-            var fans = obterFansDoLocalStorage();
+            var fans = cadastroPage.obterFansDoLocalStorage();
             assertTrue(fans == null || fans.equals("[]"));
         }
     }
@@ -133,7 +127,7 @@ public class testes_davi {
             cadastroPage.preencherFormulario(nomeFake, "", idadeFake);
             var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
-            var fans = obterFansDoLocalStorage();
+            var fans = cadastroPage.obterFansDoLocalStorage();
             assertTrue(fans == null || fans.equals("[]"));
         }
 
@@ -143,7 +137,7 @@ public class testes_davi {
             cadastroPage.preencherFormulario(nomeFake, "email @exemplo.com", idadeFake);
             var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
-            var fans = obterFansDoLocalStorage();
+            var fans = cadastroPage.obterFansDoLocalStorage();
             assertTrue(fans == null || fans.equals("[]"));
         }
     }
@@ -159,7 +153,7 @@ public class testes_davi {
             cadastroPage.preencherFormulario("", "", "");
             var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Preencha todos os campos!", alerta);
-            var fans = obterFansDoLocalStorage();
+            var fans = cadastroPage.obterFansDoLocalStorage();
             assertTrue(fans == null || fans.equals("[]"));
         }
 
@@ -169,7 +163,7 @@ public class testes_davi {
             cadastroPage.preencherFormulario(nomeFake, emailFake, idadeFake);
             var alerta = cadastroPage.obterTextoDoAlerta();
             assertEquals("Cadastro realizado com sucesso!", alerta);
-            var fans = obterFansDoLocalStorage();
+            var fans = cadastroPage.obterFansDoLocalStorage();
             assertTrue(fans != null && fans.contains(nomeFake));
         }
     }

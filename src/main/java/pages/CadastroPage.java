@@ -44,9 +44,12 @@ public class CadastroPage {
     }
 
     public boolean fansContemIdade(String idade) {
-        String json = (String) ((JavascriptExecutor) driver).executeScript("return localStorage.getItem('fans');");
+        String json = obterFansDoLocalStorage();
         return json != null && json.contains("\"idade\":\"" + idade + "\"");
     }
 
+    public String obterFansDoLocalStorage() {
+        return (String) ((JavascriptExecutor) driver).executeScript("return localStorage.getItem('fans');");
+    }
 
 }
