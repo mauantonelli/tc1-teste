@@ -223,6 +223,12 @@ public class testes_davi {
             assertTrue(driver.findElement(By.id("email")).isDisplayed());
         }
     }
+    @Nested
+    @DisplayName("Edição")
+    @Tag("edição")
+    class Edicao{
+
+    }
 
     @AfterEach
     void finalizar() {
