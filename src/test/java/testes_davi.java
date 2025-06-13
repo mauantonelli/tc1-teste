@@ -30,24 +30,37 @@ public class testes_davi {
     private EditarDeletarPage editarDeletarPage;
 
     @BeforeAll
-    void inicializar() {
+    void setup() {
         WebDriverManager.chromedriver().setup();
         faker = new Faker();
     }
 
     @BeforeEach
-    void preparar() {
+    void initDriver() {
         driver = new ChromeDriver();
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         driver.manage().window().setSize(new Dimension(1280, 720));
         driver.get(INDEX_PAGE);
         ((JavascriptExecutor) driver).executeScript("localStorage.clear();");
+
         nomeFake = faker.name().fullName();
         emailFake = faker.internet().emailAddress();
         idadeFake = String.valueOf(faker.number().numberBetween(1, 100));
+
         cadastroPage = new CadastroPage(driver, wait);
         editarDeletarPage = new EditarDeletarPage(driver, wait);
+    }
 
+    private void validaAlertaEStorage(String mensagemEsperada, boolean deveConterDados) {
+        String alerta = cadastroPage.obterTextoDoAlerta();
+        assertEquals(mensagemEsperada, alerta);
+        String fans = cadastroPage.obterFansDoLocalStorage();
+        if (deveConterDados) {
+            assertNotNull(fans);
+            assertFalse(fans.isEmpty());
+        } else {
+            assertTrue(fans == null || fans.equals("[]"));
+        }
     }
 
     @Nested
@@ -56,37 +69,35 @@ public class testes_davi {
     class CampoIdade {
 
         @Test
-        @DisplayName("Aceita idade igual a 0")
-        void aceitaIdadeZero() {
+        @DisplayName("Aceita idade zero")
+        void idadeZeroAceita() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "0");
-            assertEquals("Cadastro realizado com sucesso!", cadastroPage.obterTextoDoAlerta());
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
             assertTrue(cadastroPage.fansContemIdade("0"));
         }
 
         @Test
         @DisplayName("Aceita idade maior que 150")
-        void aceitaIdadeMaiorQue150() {
+        void idadeMaior150Aceita() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "151");
-            assertEquals("Cadastro realizado com sucesso!", cadastroPage.obterTextoDoAlerta());
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
             assertTrue(cadastroPage.fansContemIdade("151"));
         }
 
         @Test
         @DisplayName("Aceita idade negativa")
-        void aceitaIdadeNegativa() {
+        void idadeNegativaAceita() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "-5");
-            assertEquals("Cadastro realizado com sucesso!", cadastroPage.obterTextoDoAlerta());
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
             assertTrue(cadastroPage.fansContemIdade("-5"));
         }
 
         @Test
         @DisplayName("Aceita idade decimal")
-        void aceitaIdadeDecimal() {
+        void idadeDecimalAceita() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "10.5");
-            var alerta = cadastroPage.obterTextoDoAlerta();
-            assertEquals("Cadastro realizado com sucesso!", alerta);
-            var fans = cadastroPage.obterFansDoLocalStorage();
-            assertTrue(fans != null && fans.contains("\"idade\":\"10.5\""));
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+            assertTrue(cadastroPage.fansContemIdade("10.5"));
         }
     }
 
@@ -97,22 +108,16 @@ public class testes_davi {
 
         @Test
         @DisplayName("Rejeita nome vazio")
-        void rejeitaNomeVazio() {
+        void nomeVazioRejeitado() {
             cadastroPage.preencherFormulario("", emailFake, idadeFake);
-            var alerta = cadastroPage.obterTextoDoAlerta();
-            assertEquals("Preencha todos os campos!", alerta);
-            var fans = cadastroPage.obterFansDoLocalStorage();
-            assertTrue(fans == null || fans.equals("[]"));
+            validaAlertaEStorage("Preencha todos os campos!", false);
         }
 
         @Test
-        @DisplayName("Rejeita nome com apenas espaços")
-        void rejeitaApenasEspacos() {
+        @DisplayName("Rejeita nome com espaços")
+        void nomeApenasEspacosRejeitado() {
             cadastroPage.preencherFormulario("   ", emailFake, idadeFake);
-            var alerta = cadastroPage.obterTextoDoAlerta();
-            assertEquals("Preencha todos os campos!", alerta);
-            var fans = cadastroPage.obterFansDoLocalStorage();
-            assertTrue(fans == null || fans.equals("[]"));
+            validaAlertaEStorage("Preencha todos os campos!", false);
         }
     }
 
@@ -123,22 +128,16 @@ public class testes_davi {
 
         @Test
         @DisplayName("Rejeita email vazio")
-        void rejeitaEmailVazio() {
+        void emailVazioRejeitado() {
             cadastroPage.preencherFormulario(nomeFake, "", idadeFake);
-            var alerta = cadastroPage.obterTextoDoAlerta();
-            assertEquals("Preencha todos os campos!", alerta);
-            var fans = cadastroPage.obterFansDoLocalStorage();
-            assertTrue(fans == null || fans.equals("[]"));
+            validaAlertaEStorage("Preencha todos os campos!", false);
         }
 
         @Test
         @DisplayName("Rejeita email com espaço")
-        void rejeitaEmailComEspaco() {
+        void emailComEspacoRejeitado() {
             cadastroPage.preencherFormulario(nomeFake, "email @exemplo.com", idadeFake);
-            var alerta = cadastroPage.obterTextoDoAlerta();
-            assertEquals("Preencha todos os campos!", alerta);
-            var fans = cadastroPage.obterFansDoLocalStorage();
-            assertTrue(fans == null || fans.equals("[]"));
+            validaAlertaEStorage("Preencha todos os campos!", false);
         }
     }
 
@@ -148,23 +147,19 @@ public class testes_davi {
     class Cadastro {
 
         @Test
-        @DisplayName("Rejeita envio com todos os campos vazios")
-        void rejeitaCadastroVazio() {
+        @DisplayName("Rejeita cadastro com campos vazios")
+        void cadastroVazioRejeitado() {
             cadastroPage.preencherFormulario("", "", "");
-            var alerta = cadastroPage.obterTextoDoAlerta();
-            assertEquals("Preencha todos os campos!", alerta);
-            var fans = cadastroPage.obterFansDoLocalStorage();
-            assertTrue(fans == null || fans.equals("[]"));
+            validaAlertaEStorage("Preencha todos os campos!", false);
         }
 
         @Test
-        @DisplayName("Aceita cadastro válido com dados gerados")
-        void aceitaCadastroValido() {
+        @DisplayName("Aceita cadastro válido")
+        void cadastroValidoAceito() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, idadeFake);
-            var alerta = cadastroPage.obterTextoDoAlerta();
-            assertEquals("Cadastro realizado com sucesso!", alerta);
-            var fans = cadastroPage.obterFansDoLocalStorage();
-            assertTrue(fans != null && fans.contains(nomeFake));
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+            String fans = cadastroPage.obterFansDoLocalStorage();
+            assertTrue(fans.contains(nomeFake));
         }
     }
 
@@ -174,8 +169,8 @@ public class testes_davi {
     class Navegacao {
 
         @Test
-        @DisplayName("Botão 'Ver Fãs Cadastrados' redireciona para lista")
-        void botaoVerFansRedirecionaParaLista() {
+        @DisplayName("Botão 'Ver Fãs Cadastrados' leva para lista")
+        void botaoVerFansRedireciona() {
             var botao = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Ver Fãs Cadastrados')]")));
             botao.click();
             wait.until(ExpectedConditions.urlContains("lista.html"));
@@ -183,16 +178,16 @@ public class testes_davi {
         }
 
         @Test
-        @DisplayName("Página de lista contém tabela visível")
-        void listaContemTabelaVisivel() {
+        @DisplayName("Lista mostra tabela visível")
+        void listaExibeTabela() {
             driver.get(LIST_PAGE);
             var tabela = wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("table")));
             assertTrue(tabela.isDisplayed());
         }
 
         @Test
-        @DisplayName("Botão 'Voltar' redireciona para index")
-        void botaoVoltarRedirecionaParaIndex() {
+        @DisplayName("Botão 'Voltar' leva para index")
+        void botaoVoltarRedireciona() {
             driver.get(LIST_PAGE);
             var botaoVoltar = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Voltar')]")));
             botaoVoltar.click();
@@ -207,8 +202,8 @@ public class testes_davi {
     class Interface {
 
         @Test
-        @DisplayName("Campos são visíveis e botão está habilitado")
-        void camposVisiveisEHabilitados() {
+        @DisplayName("Campos visíveis e botão habilitado")
+        void camposVisiveisBotaoHabilitado() {
             assertTrue(driver.findElement(By.id("nome")).isDisplayed());
             assertTrue(driver.findElement(By.id("email")).isDisplayed());
             assertTrue(driver.findElement(By.id("idade")).isDisplayed());
@@ -216,22 +211,24 @@ public class testes_davi {
         }
 
         @Test
-        @DisplayName("Layout se adapta em tela pequena")
-        void layoutNaoQuebraEmLarguraPequena() {
+        @DisplayName("Layout funciona em tela pequena")
+        void layoutResponsivo() {
             driver.manage().window().setSize(new Dimension(500, 800));
             assertTrue(driver.findElement(By.id("nome")).isDisplayed());
             assertTrue(driver.findElement(By.id("email")).isDisplayed());
         }
     }
+
     @Nested
     @DisplayName("Edição")
-    @Tag("edição")
-    class Edicao{
+    @Tag("edicao")
+    class Edicao {
+
 
     }
 
     @AfterEach
-    void finalizar() {
+    void tearDown() {
         driver.quit();
     }
 }
