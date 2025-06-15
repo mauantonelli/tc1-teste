@@ -28,7 +28,9 @@ public class CadastroPage {
         if (email != null) inputEmail.sendKeys(email);
         if (idade != null) inputIdade.sendKeys(idade);
 
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        ((JavascriptExecutor) driver).executeScript(
+                "document.getElementById('fanForm').dispatchEvent(new Event('submit', {cancelable: true}))"
+        );
     }
 
     public String obterTextoDoAlerta() {
