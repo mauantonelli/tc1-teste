@@ -225,6 +225,52 @@ public class testes_davi {
     class Edicao {
 
 
+        @Test
+        @DisplayName("Edita fã alterando somente o nome")
+        void editaSomenteNome() {
+            cadastroPage.preencherFormulario(nomeFake, emailFake, idadeFake);
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+
+            driver.get(LIST_PAGE);
+
+            ((JavascriptExecutor) driver).executeScript(
+                    "let count = 0;" +
+                            "window.prompt = function(msg, val) {" +
+                            "  count++;" +
+                            "  if(count === 1) return 'Nome Editado';" +
+                            "  if(count === 2) return val;" +
+                            "  if(count === 3) return val;" +
+                            "  return val;" +
+                            "};"
+            );
+
+            WebElement botaoEditar = wait.until(ExpectedConditions.elementToBeClickable(
+                    By.xpath("//button[contains(text(),'Editar')]")
+            ));
+            botaoEditar.click();
+
+            wait.until(ExpectedConditions.alertIsPresent());
+            driver.switchTo().alert().accept();
+
+            WebElement fanEditado = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//strong[contains(text(),'Nome Editado')]")
+            ));
+
+            assertTrue(fanEditado.isDisplayed());
+
+            WebElement divPai = fanEditado.findElement(By.xpath("./.."));
+            assertTrue(divPai.getText().contains(emailFake));
+            assertTrue(divPai.getText().contains(idadeFake));
+        }
+
+
+
+
+
+
+
+
+
     }
 
     @AfterEach
