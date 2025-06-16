@@ -284,6 +284,37 @@ public class testes_davi {
             assertTrue(editado.isDisplayed());
         }
 
+        @Test
+        @DisplayName("Edita múltiplos fãs sequencialmente")
+        void editaMultiplosFans() {
+            cadastroPage.preencherFormulario(nomeFake, emailFake, idadeFake);
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+            String nome2 = faker.name().fullName();
+            String email2 = faker.internet().emailAddress();
+            String idade2 = "55";
+            cadastroPage.preencherFormulario(nome2, email2, idade2);
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+            driver.get(LIST_PAGE);
+
+            ((JavascriptExecutor) driver).executeScript(
+                    "let c=0; window.prompt=(msg,v)=>{ c++; if(c===1)return 'Primeiro'; if(c===2)return v; if(c===3)return v; return v;};"
+            );
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("(//button[contains(text(),'Editar')])[1]"))).click();
+            wait.until(ExpectedConditions.alertIsPresent());
+            driver.switchTo().alert().accept();
+
+            ((JavascriptExecutor) driver).executeScript(
+                    "window.prompt=(msg,v)=>{ if(msg.includes('nome')) return 'Segundo'; return v; };"
+            );
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("(//button[contains(text(),'Editar')])[2]"))).click();
+            wait.until(ExpectedConditions.alertIsPresent());
+            driver.switchTo().alert().accept();
+
+            assertTrue(driver.findElement(By.xpath("//strong[contains(text(),'Primeiro')]")).isDisplayed());
+            assertTrue(driver.findElement(By.xpath("//strong[contains(text(),'Segundo')]")).isDisplayed());
+        }
+
+
 
 
 
