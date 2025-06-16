@@ -313,7 +313,19 @@ public class testes_davi {
             assertTrue(driver.findElement(By.xpath("//strong[contains(text(),'Primeiro')]")).isDisplayed());
             assertTrue(driver.findElement(By.xpath("//strong[contains(text(),'Segundo')]")).isDisplayed());
         }
-
+        @Test
+        @DisplayName("Edita idade para negativo")
+        void editaIdadeNegativa() {
+            cadastroPage.preencherFormulario(nomeFake, emailFake, idadeFake);
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+            driver.get(LIST_PAGE);
+            ((JavascriptExecutor) driver).executeScript(
+                    "let c = 0; window.prompt = function(_, v){ return [v, v, '-10'][c++]; };"
+            );
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Editar')]"))).click();
+            wait.until(ExpectedConditions.alertIsPresent()).accept();
+            assertTrue(driver.getPageSource().contains("Idade: -10"));
+        }
 
 
 
