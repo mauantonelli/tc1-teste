@@ -302,7 +302,7 @@ public class testes_davi {
             }
 
             @Test
-            @DisplayName("Edita idade para negativo — deve falhar")
+            @DisplayName("Edita idade para negativo — deve falhar se permitir")
             void editaIdadeNegativaDeveFalhar() {
                 cadastroPage.preencherFormulario(nomeFake, emailFake, idadeFake);
                 validaAlertaEStorage("Cadastro realizado com sucesso!", true);
@@ -321,7 +321,7 @@ public class testes_davi {
 
 
             @Test
-            @DisplayName("Edita idade com texto — deve falhar")
+            @DisplayName("Edita idade com texto — deve falhar se permitir")
             void editaIdadeTextoDeveFalhar() {
                 cadastroPage.preencherFormulario(nomeFake, emailFake, "20");
                 validaAlertaEStorage("Cadastro realizado com sucesso!", true);
