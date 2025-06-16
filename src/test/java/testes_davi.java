@@ -389,9 +389,10 @@ public class testes_davi {
                 String fans = cadastroPage.obterFansDoLocalStorage();
                 assertFalse(fans.contains(nomeFake));
             }
+
             @Test
-            @DisplayName("Edita idade para zero")
-            void editaIdadeZero() {
+            @DisplayName("Edita idade para zero — deve falhar se permitir")
+            void editaIdadeZeroDeveFalhar() {
                 cadastroPage.preencherFormulario(nomeFake, emailFake, "30");
                 validaAlertaEStorage("Cadastro realizado com sucesso!", true);
                 driver.get(LIST_PAGE);
@@ -399,9 +400,14 @@ public class testes_davi {
                         "let c = 0; window.prompt = function(_, v){ return [v, v, '0'][c++]; };"
                 );
                 wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Editar')]"))).click();
-                wait.until(ExpectedConditions.alertIsPresent()).accept();
-                assertTrue(driver.getPageSource().contains("Idade: 0"));
+                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                String mensagem = alert.getText();
+                alert.accept();
+
+                assertNotEquals("Fã editado com sucesso!", mensagem);
+                assertFalse(driver.getPageSource().contains("Idade: 0"));
             }
+
             @Test
             @DisplayName("Deve exibir erro ao editar com nome vazio")
             void deveExibirErroAoEditarComNomeVazio() {
