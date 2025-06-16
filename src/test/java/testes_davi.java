@@ -327,6 +327,21 @@ public class testes_davi {
             assertTrue(driver.getPageSource().contains("Idade: -10"));
         }
 
+        @Test
+        @DisplayName("Edita idade com texto")
+        void editaIdadeTexto() {
+            cadastroPage.preencherFormulario(nomeFake, emailFake, "20");
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+            driver.get(LIST_PAGE);
+            ((JavascriptExecutor) driver).executeScript(
+                    "let c = 0; window.prompt = function(_, v){ return [v, v, 'vinte'][c++]; };"
+            );
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Editar')]"))).click();
+            wait.until(ExpectedConditions.alertIsPresent()).accept();
+            assertTrue(driver.getPageSource().contains("Idade: vinte"));
+        }
+
+
 
 
 
