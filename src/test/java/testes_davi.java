@@ -339,8 +339,8 @@ public class testes_davi {
 
 
             @Test
-            @DisplayName("Edita email sem '@'")
-            void editaEmailSemArroba() {
+            @DisplayName("Edita email sem '@' — deve falhar se permitir")
+            void editaEmailSemArrobaDeveFalhar() {
                 cadastroPage.preencherFormulario(nomeFake, emailFake, idadeFake);
                 validaAlertaEStorage("Cadastro realizado com sucesso!", true);
                 driver.get(LIST_PAGE);
@@ -349,9 +349,11 @@ public class testes_davi {
                 );
                 wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Editar')]"))).click();
                 Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-                assertEquals("Fã editado com sucesso!", alert.getText());
+                String mensagem = alert.getText();
                 alert.accept();
-                assertTrue(driver.getPageSource().contains("emailsemarroba.com"));
+
+                assertNotEquals("Fã editado com sucesso!", mensagem);
+                assertFalse(driver.getPageSource().contains("emailsemarroba.com"));
             }
 
             @Test
