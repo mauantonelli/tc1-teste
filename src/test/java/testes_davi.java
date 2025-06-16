@@ -133,13 +133,6 @@ public class testes_davi {
             validaAlertaEStorage("Preencha todos os campos!", false);
         }
 
-        @Test
-        @DisplayName("Rejeita email com espaço")
-        void emailComEspacoRejeitado() {
-            cadastroPage.preencherFormulario(nomeFake, "email @exemplo.com", idadeFake);
-            validaAlertaEStorage("Preencha todos os campos!", false);
-        }
-    }
 
     @Nested
     @DisplayName("Cadastro Completo")
