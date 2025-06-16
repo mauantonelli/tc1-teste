@@ -368,6 +368,24 @@ public class testes_davi {
             assertTrue(driver.getPageSource().contains("EMAIL@EXEMPLO.COM"));
         }
 
+        @Test
+        @DisplayName("Deve remover fã corretamente da lista")
+        void deveRemoverFanCorretamente() {
+            cadastroPage.preencherFormulario(nomeFake, emailFake, idadeFake);
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+            driver.get(LIST_PAGE);
+
+            WebElement botaoRemover = wait.until(ExpectedConditions.elementToBeClickable(
+                    By.xpath("//button[contains(text(),'Remover')]")
+            ));
+            botaoRemover.click();
+
+            wait.until(ExpectedConditions.alertIsPresent()).accept();
+
+            String fans = cadastroPage.obterFansDoLocalStorage();
+            assertFalse(fans.contains(nomeFake));
+        }
+
 
 
 
