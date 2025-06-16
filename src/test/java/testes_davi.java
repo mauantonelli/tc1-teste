@@ -319,8 +319,8 @@ public class testes_davi {
             }
 
             @Test
-            @DisplayName("Edita idade com texto")
-            void editaIdadeTexto() {
+            @DisplayName("Edita idade com texto — deve falhar")
+            void editaIdadeTextoDeveFalhar() {
                 cadastroPage.preencherFormulario(nomeFake, emailFake, "20");
                 validaAlertaEStorage("Cadastro realizado com sucesso!", true);
                 driver.get(LIST_PAGE);
@@ -329,10 +329,12 @@ public class testes_davi {
                 );
                 wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Editar')]"))).click();
                 Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-                assertEquals("Fã editado com sucesso!", alert.getText());
+                String mensagem = alert.getText();
                 alert.accept();
-                assertTrue(driver.getPageSource().contains("Idade: vinte"));
+                assertNotEquals("Fã editado com sucesso!", mensagem, "Não deveria editar com idade inválida");
+                assertFalse(driver.getPageSource().contains("Idade: vinte"), "Texto inválido foi salvo na página");
             }
+
 
             @Test
             @DisplayName("Edita email sem '@'")
