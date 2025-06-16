@@ -249,8 +249,8 @@ public class testes_davi {
             }
 
             @Test
-            @DisplayName("Edita fã adicionando caracteres especiais no nome")
-            void editaNomeComCaracteresEspeciais() {
+            @DisplayName("Edita fã adicionando caracteres especiais no nome — deve falhar se permitir")
+            void editaNomeComCaracteresEspeciaisDeveFalhar() {
                 cadastroPage.preencherFormulario(nomeFake, emailFake, idadeFake);
                 validaAlertaEStorage("Cadastro realizado com sucesso!", true);
                 driver.get(LIST_PAGE);
@@ -261,14 +261,13 @@ public class testes_davi {
                 );
                 wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Editar')]"))).click();
                 Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-                assertEquals("Fã editado com sucesso!", alert.getText());
+                String mensagem = alert.getText();
                 alert.accept();
 
-                WebElement editado = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                        By.xpath("//strong[contains(text(),'" + nomeEspecial + "')]")
-                ));
-                assertTrue(editado.isDisplayed());
+                assertNotEquals("Fã editado com sucesso!", mensagem);
+                assertFalse(driver.getPageSource().contains(nomeEspecial));
             }
+
 
             @Test
             @DisplayName("Edita múltiplos fãs sequencialmente")
