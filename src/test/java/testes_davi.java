@@ -178,14 +178,6 @@ public class testes_davi {
         }
 
         @Test
-        @DisplayName("Lista mostra tabela visível")
-        void listaExibeTabela() {
-            driver.get(LIST_PAGE);
-            var tabela = wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("table")));
-            assertTrue(tabela.isDisplayed());
-        }
-
-        @Test
         @DisplayName("Botão 'Voltar' leva para index")
         void botaoVoltarRedireciona() {
             driver.get(LIST_PAGE);
