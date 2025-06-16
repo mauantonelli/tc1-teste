@@ -414,6 +414,22 @@ public class testes_davi {
                 assertEquals("Erro: Todos os campos devem ser preenchidos para editar o fã.", alert.getText());
                 alert.accept();
             }
+            @Test
+            @DisplayName("Deve exibir erro ao editar com email vazio")
+            void deveExibirErroAoEditarComEmailVazio() {
+                cadastroPage.preencherFormulario(nomeFake, emailFake, idadeFake);
+                validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+                driver.get(LIST_PAGE);
+                ((JavascriptExecutor) driver).executeScript(
+                        "window.prompt = function(msg) { if(msg.includes('email')) return ''; return 'preenchido'; }"
+                );
+                wait.until(ExpectedConditions.elementToBeClickable(
+                        By.xpath("//button[contains(text(),'Editar')]"))
+                ).click();
+                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                assertEquals("Erro: Todos os campos devem ser preenchidos para editar o fã.", alert.getText());
+                alert.accept();
+            }
         }
 
 
