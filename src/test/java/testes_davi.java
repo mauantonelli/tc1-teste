@@ -224,7 +224,6 @@ public class testes_davi {
     @Tag("edicao")
     class Edicao {
 
-
         @Test
         @DisplayName("Edita fã alterando somente o nome")
         void editaSomenteNome() {
@@ -249,8 +248,9 @@ public class testes_davi {
             ));
             botaoEditar.click();
 
-            wait.until(ExpectedConditions.alertIsPresent());
-            driver.switchTo().alert().accept();
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            assertEquals("Fã editado com sucesso!", alert.getText());
+            alert.accept();
 
             WebElement fanEditado = wait.until(ExpectedConditions.visibilityOfElementLocated(
                     By.xpath("//strong[contains(text(),'Nome Editado')]")
@@ -275,8 +275,9 @@ public class testes_davi {
                     "let count=0; window.prompt=(msg,val)=>{count++; return count===1?'" + nomeEspecial + "':val;};"
             );
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Editar')]"))).click();
-            wait.until(ExpectedConditions.alertIsPresent());
-            driver.switchTo().alert().accept();
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            assertEquals("Fã editado com sucesso!", alert.getText());
+            alert.accept();
 
             WebElement editado = wait.until(ExpectedConditions.visibilityOfElementLocated(
                     By.xpath("//strong[contains(text(),'" + nomeEspecial + "')]")
@@ -300,19 +301,22 @@ public class testes_davi {
                     "let c=0; window.prompt=(msg,v)=>{ c++; if(c===1)return 'Primeiro'; if(c===2)return v; if(c===3)return v; return v;};"
             );
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath("(//button[contains(text(),'Editar')])[1]"))).click();
-            wait.until(ExpectedConditions.alertIsPresent());
-            driver.switchTo().alert().accept();
+            Alert alert1 = wait.until(ExpectedConditions.alertIsPresent());
+            assertEquals("Fã editado com sucesso!", alert1.getText());
+            alert1.accept();
 
             ((JavascriptExecutor) driver).executeScript(
                     "window.prompt=(msg,v)=>{ if(msg.includes('nome')) return 'Segundo'; return v; };"
             );
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath("(//button[contains(text(),'Editar')])[2]"))).click();
-            wait.until(ExpectedConditions.alertIsPresent());
-            driver.switchTo().alert().accept();
+            Alert alert2 = wait.until(ExpectedConditions.alertIsPresent());
+            assertEquals("Fã editado com sucesso!", alert2.getText());
+            alert2.accept();
 
             assertTrue(driver.findElement(By.xpath("//strong[contains(text(),'Primeiro')]")).isDisplayed());
             assertTrue(driver.findElement(By.xpath("//strong[contains(text(),'Segundo')]")).isDisplayed());
         }
+
         @Test
         @DisplayName("Edita idade para negativo")
         void editaIdadeNegativa() {
@@ -323,7 +327,9 @@ public class testes_davi {
                     "let c = 0; window.prompt = function(_, v){ return [v, v, '-10'][c++]; };"
             );
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Editar')]"))).click();
-            wait.until(ExpectedConditions.alertIsPresent()).accept();
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            assertEquals("Fã editado com sucesso!", alert.getText());
+            alert.accept();
             assertTrue(driver.getPageSource().contains("Idade: -10"));
         }
 
@@ -337,9 +343,12 @@ public class testes_davi {
                     "let c = 0; window.prompt = function(_, v){ return [v, v, 'vinte'][c++]; };"
             );
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Editar')]"))).click();
-            wait.until(ExpectedConditions.alertIsPresent()).accept();
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            assertEquals("Fã editado com sucesso!", alert.getText());
+            alert.accept();
             assertTrue(driver.getPageSource().contains("Idade: vinte"));
         }
+
         @Test
         @DisplayName("Edita email sem '@'")
         void editaEmailSemArroba() {
@@ -350,7 +359,9 @@ public class testes_davi {
                     "let c = 0; window.prompt = function(_, v){ return [v, 'emailsemarroba.com', v][c++]; };"
             );
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Editar')]"))).click();
-            wait.until(ExpectedConditions.alertIsPresent()).accept();
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            assertEquals("Fã editado com sucesso!", alert.getText());
+            alert.accept();
             assertTrue(driver.getPageSource().contains("emailsemarroba.com"));
         }
 
@@ -364,7 +375,9 @@ public class testes_davi {
                     "let c = 0; window.prompt = function(_, v){ return [v, 'EMAIL@EXEMPLO.COM', v][c++]; };"
             );
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Editar')]"))).click();
-            wait.until(ExpectedConditions.alertIsPresent()).accept();
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            assertEquals("Fã editado com sucesso!", alert.getText());
+            alert.accept();
             assertTrue(driver.getPageSource().contains("EMAIL@EXEMPLO.COM"));
         }
 
@@ -380,20 +393,15 @@ public class testes_davi {
             ));
             botaoRemover.click();
 
-            wait.until(ExpectedConditions.alertIsPresent()).accept();
+            Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+            assertEquals("Fã removido com sucesso!", alert.getText());
+            alert.accept();
 
             String fans = cadastroPage.obterFansDoLocalStorage();
             assertFalse(fans.contains(nomeFake));
         }
-
-
-
-
-
-
-
-
     }
+
 
     @AfterEach
     void tearDown() {
