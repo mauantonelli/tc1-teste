@@ -69,27 +69,30 @@ public class testes_davi {
     class CampoIdade {
 
         @Test
-        @DisplayName("Não permite cadastrar idade igual a zero")
-        void permiteIdadeZero() {
+        @DisplayName("Idade zero — deve falhar se permitir")
+        void idadeZeroDeveFalhar() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "0");
-            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
-            assertTrue(cadastroPage.fansContemIdade("0"));
+            String alerta = cadastroPage.obterTextoDoAlerta();
+            assertNotEquals("Cadastro realizado com sucesso!", alerta);
+            assertFalse(cadastroPage.fansContemIdade("0"));
         }
 
         @Test
-        @DisplayName("Não permite cadastrar idade maior que 150")
-        void permiteIdadeMaiorQue150() {
+        @DisplayName("Idade maior que 150 — deve falhar se permitir")
+        void idadeMaior150DeveFalhar() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "151");
-            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
-            assertTrue(cadastroPage.fansContemIdade("151"));
+            String alerta = cadastroPage.obterTextoDoAlerta();
+            assertNotEquals("Cadastro realizado com sucesso!", alerta);
+            assertFalse(cadastroPage.fansContemIdade("151"));
         }
 
         @Test
-        @DisplayName("Não permite cadastrar idade negativa")
-        void permiteIdadeNegativa() {
+        @DisplayName("Idade negativa — deve falhar se permitir")
+        void idadeNegativaDeveFalhar() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "-5");
-            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
-            assertTrue(cadastroPage.fansContemIdade("-5"));
+            String alerta = cadastroPage.obterTextoDoAlerta();
+            assertNotEquals("Cadastro realizado com sucesso!", alerta);
+            assertFalse(cadastroPage.fansContemIdade("-5"));
         }
 
         @Test
