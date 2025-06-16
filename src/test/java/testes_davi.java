@@ -69,40 +69,37 @@ public class testes_davi {
     class CampoIdade {
 
         @Test
-        @DisplayName("Idade zero — deve falhar se permitir")
-        void idadeZeroDeveFalhar() {
+        @DisplayName("Não permite cadastrar idade igual a zero")
+        void permiteIdadeZero() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "0");
-            String alerta = cadastroPage.obterTextoDoAlerta();
-            assertNotEquals("Cadastro realizado com sucesso!", alerta);
-            assertFalse(cadastroPage.fansContemIdade("0"));
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+            assertTrue(cadastroPage.fansContemIdade("0"));
         }
 
         @Test
-        @DisplayName("Idade maior que 150 — deve falhar se permitir")
-        void idadeMaior150DeveFalhar() {
+        @DisplayName("Não permite cadastrar idade maior que 150")
+        void permiteIdadeMaiorQue150() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "151");
-            String alerta = cadastroPage.obterTextoDoAlerta();
-            assertNotEquals("Cadastro realizado com sucesso!", alerta);
-            assertFalse(cadastroPage.fansContemIdade("151"));
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+            assertTrue(cadastroPage.fansContemIdade("151"));
         }
 
         @Test
-        @DisplayName("Idade negativa — deve falhar se permitir")
-        void idadeNegativaDeveFalhar() {
+        @DisplayName("Não permite cadastrar idade negativa")
+        void permiteIdadeNegativa() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "-5");
-            String alerta = cadastroPage.obterTextoDoAlerta();
-            assertNotEquals("Cadastro realizado com sucesso!", alerta);
-            assertFalse(cadastroPage.fansContemIdade("-5"));
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+            assertTrue(cadastroPage.fansContemIdade("-5"));
         }
 
         @Test
-        @DisplayName("Idade decimal — deve falhar se permitir")
-        void idadeDecimalDeveFalhar() {
+        @DisplayName("Não permite cadastrar idade decimal")
+        void permiteIdadeDecimal() {
             cadastroPage.preencherFormulario(nomeFake, emailFake, "10.5");
-            String alerta = cadastroPage.obterTextoDoAlerta();
-            assertNotEquals("Cadastro realizado com sucesso!", alerta);
-            assertFalse(cadastroPage.fansContemIdade("10.5"));
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+            assertTrue(cadastroPage.fansContemIdade("10.5"));
         }
+
     }
 
         @Nested
