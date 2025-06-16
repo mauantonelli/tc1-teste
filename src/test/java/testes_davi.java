@@ -354,6 +354,20 @@ public class testes_davi {
             assertTrue(driver.getPageSource().contains("emailsemarroba.com"));
         }
 
+        @Test
+        @DisplayName("Edita com email maiúsculo")
+        void editaEmailMaiusculo() {
+            cadastroPage.preencherFormulario(nomeFake, emailFake, idadeFake);
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+            driver.get(LIST_PAGE);
+            ((JavascriptExecutor) driver).executeScript(
+                    "let c = 0; window.prompt = function(_, v){ return [v, 'EMAIL@EXEMPLO.COM', v][c++]; };"
+            );
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Editar')]"))).click();
+            wait.until(ExpectedConditions.alertIsPresent()).accept();
+            assertTrue(driver.getPageSource().contains("EMAIL@EXEMPLO.COM"));
+        }
+
 
 
 
