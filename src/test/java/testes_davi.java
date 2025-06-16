@@ -303,8 +303,8 @@ public class testes_davi {
             }
 
             @Test
-            @DisplayName("Edita idade para negativo")
-            void editaIdadeNegativa() {
+            @DisplayName("Edita idade para negativo — deve falhar")
+            void editaIdadeNegativaDeveFalhar() {
                 cadastroPage.preencherFormulario(nomeFake, emailFake, idadeFake);
                 validaAlertaEStorage("Cadastro realizado com sucesso!", true);
                 driver.get(LIST_PAGE);
@@ -313,10 +313,13 @@ public class testes_davi {
                 );
                 wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Editar')]"))).click();
                 Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-                assertEquals("Fã editado com sucesso!", alert.getText());
+                String mensagem = alert.getText();
                 alert.accept();
-                assertTrue(driver.getPageSource().contains("Idade: -10"));
+
+                assertNotEquals("Fã editado com sucesso!", mensagem, "Não deveria permitir idade negativa");
+                assertFalse(driver.getPageSource().contains("Idade: -10"), "Idade negativa foi exibida na tela");
             }
+
 
             @Test
             @DisplayName("Edita idade com texto — deve falhar")
