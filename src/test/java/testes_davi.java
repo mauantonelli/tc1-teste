@@ -385,6 +385,19 @@ public class testes_davi {
                 String fans = cadastroPage.obterFansDoLocalStorage();
                 assertFalse(fans.contains(nomeFake));
             }
+            @Test
+            @DisplayName("Edita idade para zero")
+            void editaIdadeZero() {
+                cadastroPage.preencherFormulario(nomeFake, emailFake, "30");
+                validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+                driver.get(LIST_PAGE);
+                ((JavascriptExecutor) driver).executeScript(
+                        "let c = 0; window.prompt = function(_, v){ return [v, v, '0'][c++]; };"
+                );
+                wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Editar')]"))).click();
+                wait.until(ExpectedConditions.alertIsPresent()).accept();
+                assertTrue(driver.getPageSource().contains("Idade: 0"));
+            }
         }
 
 
