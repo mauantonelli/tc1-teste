@@ -398,6 +398,22 @@ public class testes_davi {
                 wait.until(ExpectedConditions.alertIsPresent()).accept();
                 assertTrue(driver.getPageSource().contains("Idade: 0"));
             }
+            @Test
+            @DisplayName("Deve exibir erro ao editar com nome vazio")
+            void deveExibirErroAoEditarComNomeVazio() {
+                cadastroPage.preencherFormulario(nomeFake, emailFake, idadeFake);
+                validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+                driver.get(LIST_PAGE);
+                ((JavascriptExecutor) driver).executeScript(
+                        "window.prompt = function(msg) { if(msg.includes('nome')) return ''; return 'preenchido'; }"
+                );
+                wait.until(ExpectedConditions.elementToBeClickable(
+                        By.xpath("//button[contains(text(),'Editar')]"))
+                ).click();
+                Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+                assertEquals("Erro: Todos os campos devem ser preenchidos para editar o fã.", alert.getText());
+                alert.accept();
+            }
         }
 
 
