@@ -263,7 +263,26 @@ public class testes_davi {
             assertTrue(divPai.getText().contains(idadeFake));
         }
 
+        @Test
+        @DisplayName("Edita fã adicionando caracteres especiais no nome")
+        void editaNomeComCaracteresEspeciais() {
+            cadastroPage.preencherFormulario(nomeFake, emailFake, idadeFake);
+            validaAlertaEStorage("Cadastro realizado com sucesso!", true);
+            driver.get(LIST_PAGE);
 
+            String nomeEspecial = "@#$%!";
+            ((JavascriptExecutor) driver).executeScript(
+                    "let count=0; window.prompt=(msg,val)=>{count++; return count===1?'" + nomeEspecial + "':val;};"
+            );
+            wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Editar')]"))).click();
+            wait.until(ExpectedConditions.alertIsPresent());
+            driver.switchTo().alert().accept();
+
+            WebElement editado = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//strong[contains(text(),'" + nomeEspecial + "')]")
+            ));
+            assertTrue(editado.isDisplayed());
+        }
 
 
 
